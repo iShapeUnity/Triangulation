@@ -1,0 +1,13 @@
+{
+    "name": "iShape.Triangulation.Editor.Tests",
+    "references": [
+        "iShape.Triangulation.Runtime"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
