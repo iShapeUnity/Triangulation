@@ -8,8 +8,8 @@
         "iShape"
     ],
     "dependencies": {
-        "com.ishape.geometry": "0.0.1",
-        "com.ishape.support": "0.0.1"
+        "com.ishape.geometry": "https://github.com/iShapeUnity/Geometry.git",
+        "com.ishape.support": "https://github.com/iShapeUnity/Support.git",
      },
     "repository": {
         "type": "git",
