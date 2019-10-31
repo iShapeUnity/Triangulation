@@ -1,4 +1,8 @@
 {
     "name": "iShape.Triangulation.Runtime",
-    "excludePlatforms": []
+	"excludePlatforms": [],
+	"references": [
+        "iShape.Geometry.Runtime",
+        "iShape.Support.Runtime"
+    ]
 }
