@@ -168,8 +168,9 @@ namespace iShape.Triangulation.Shape {
 			}
 
 			dataList.Dispose();
+			iPoints.Dispose();
 
-			return new ShapeNavigator(iPoints, links, natures, indices);
+			return new ShapeNavigator(links, natures, indices);
         }
 
 		private static void Sort(NativeArray<SortData> array) {
