@@ -46,29 +46,100 @@ namespace iShape.Triangulation.Shape.Delaunay {
                     int i = origin[l];
                     var triangle = this.triangles[i];
                     visitMarks[i] = true;
-                    for(int k = 0; k < 3; ++k) {
-                        int neighborIndex = triangle.GetNeighborByIndex(k);
-                        if(neighborIndex >= 0) {
-                            var neighbor = triangles[neighborIndex];
-                            if(this.Swap(triangle, neighbor)) {
+                    
+                    if (triangle.nA >= 0) {
+                        var neighbor = triangles[triangle.nA];
+                        if(this.Swap(triangle, neighbor)) {
 
-                                triangle = this.triangles[triangle.index];
-                                neighbor = this.triangles[neighbor.index];
-
-                                for(int j = 0; j < 3; ++j) {
-                                    int ni = triangle.GetNeighborByIndex(j);
-                                    if(ni >= 0 && ni != neighbor.index) {
-                                        buffer.Add(ni);
-                                    }
-                                }
-
-                                for(int j = 0; j < 3; ++j) {
-                                    int ni = neighbor.GetNeighborByIndex(j);
-                                    if(ni >= 0 && ni != triangle.index) {
-                                        buffer.Add(ni);
-                                    }
-                                }
+                            triangle = this.triangles[triangle.index];
+                            neighbor = this.triangles[neighbor.index];
+                            
+                            
+                            if(triangle.nA >= 0 && triangle.nA != neighbor.index) {
+                                buffer.Add(triangle.nA);
                             }
+                            if(triangle.nB >= 0 && triangle.nB != neighbor.index) {
+                                buffer.Add(triangle.nB);
+                            }
+                            if(triangle.nC >= 0 && triangle.nC != neighbor.index) {
+                                buffer.Add(triangle.nC);
+                            }
+  
+                            
+                            if(neighbor.nA >= 0 && neighbor.nA != triangle.index) {
+                                buffer.Add(neighbor.nA);
+                            }
+                            if(neighbor.nB >= 0 && neighbor.nB != triangle.index) {
+                                buffer.Add(neighbor.nB);
+                            }
+                            if(neighbor.nC >= 0 && neighbor.nC != triangle.index) {
+                                buffer.Add(neighbor.nC);
+                            }
+
+                        }
+                    }
+                    
+                    if (triangle.nB >= 0) {
+                        var neighbor = triangles[triangle.nB];
+                        if(this.Swap(triangle, neighbor)) {
+
+                            triangle = this.triangles[triangle.index];
+                            neighbor = this.triangles[neighbor.index];
+                            
+                            
+                            if(triangle.nA >= 0 && triangle.nA != neighbor.index) {
+                                buffer.Add(triangle.nA);
+                            }
+                            if(triangle.nB >= 0 && triangle.nB != neighbor.index) {
+                                buffer.Add(triangle.nB);
+                            }
+                            if(triangle.nC >= 0 && triangle.nC != neighbor.index) {
+                                buffer.Add(triangle.nC);
+                            }
+  
+                            
+                            if(neighbor.nA >= 0 && neighbor.nA != triangle.index) {
+                                buffer.Add(neighbor.nA);
+                            }
+                            if(neighbor.nB >= 0 && neighbor.nB != triangle.index) {
+                                buffer.Add(neighbor.nB);
+                            }
+                            if(neighbor.nC >= 0 && neighbor.nC != triangle.index) {
+                                buffer.Add(neighbor.nC);
+                            }
+
+                        }
+                    }
+                    
+                    if (triangle.nC >= 0) {
+                        var neighbor = triangles[triangle.nC];
+                        if(this.Swap(triangle, neighbor)) {
+
+                            triangle = this.triangles[triangle.index];
+                            neighbor = this.triangles[neighbor.index];
+                            
+                            
+                            if(triangle.nA >= 0 && triangle.nA != neighbor.index) {
+                                buffer.Add(triangle.nA);
+                            }
+                            if(triangle.nB >= 0 && triangle.nB != neighbor.index) {
+                                buffer.Add(triangle.nB);
+                            }
+                            if(triangle.nC >= 0 && triangle.nC != neighbor.index) {
+                                buffer.Add(triangle.nC);
+                            }
+  
+                            
+                            if(neighbor.nA >= 0 && neighbor.nA != triangle.index) {
+                                buffer.Add(neighbor.nA);
+                            }
+                            if(neighbor.nB >= 0 && neighbor.nB != triangle.index) {
+                                buffer.Add(neighbor.nB);
+                            }
+                            if(neighbor.nC >= 0 && neighbor.nC != triangle.index) {
+                                buffer.Add(neighbor.nC);
+                            }
+
                         }
                     }
                 }
