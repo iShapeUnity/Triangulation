@@ -6,7 +6,7 @@ namespace iShape.Triangulation.Shape {
 		public static readonly Link empty = new Link(0, 0, 0, Vertex.empty);
 
 		public int prev;
-		public int self;
+		public readonly int self;
 		public int next;
 
 		public Vertex vertex;

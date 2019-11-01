@@ -1,5 +1,4 @@
 ﻿using Unity.Collections;
-using iShape.Geometry;
 
 namespace iShape.Triangulation.Shape {
 
@@ -13,7 +12,6 @@ namespace iShape.Triangulation.Shape {
 			this.links = links;
             this.natures = natures;
 			this.indices = indices;
-
 		}
 
         internal void Dispose() {

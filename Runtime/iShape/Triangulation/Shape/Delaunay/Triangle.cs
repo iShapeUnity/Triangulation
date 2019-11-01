@@ -1,6 +1,4 @@
-﻿using UnityEngine.Assertions;
-using iShape.Geometry;
-using iShape.Triangulation.Util;
+﻿using iShape.Geometry;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
@@ -18,18 +16,6 @@ namespace iShape.Triangulation.Shape.Delaunay {
         internal int nB;
         internal int nC;
 
-
-        internal Triangle(int index = -1) {
-            this.index = index;
-            this.vA = Vertex.empty;
-            this.vB = Vertex.empty;
-            this.vC = Vertex.empty;
-
-            this.nA = -1;
-            this.nB = -1;
-            this.nC = -1;
-        }
-
         internal Triangle(int index, Vertex a, Vertex b, Vertex c) {
             this.index = index;
             this.vA = a;
@@ -39,38 +25,6 @@ namespace iShape.Triangulation.Shape.Delaunay {
             this.nA = -1;
             this.nB = -1;
             this.nC = -1;
-        }
-
-        internal Triangle(int index, Vertex a, Vertex b, Vertex c, int bc) {
-            this.index = index;
-            this.vA = a;
-            this.vB = b;
-            this.vC = c;
-            this.nA = bc;
-            this.nB = -1;
-            this.nC = -1;
-        }
-
-        internal Triangle(int index, Vertex a, Vertex b, Vertex c, int ac, int ab) {
-            this.index = index;
-            this.vA = a;
-            this.vB = b;
-            this.vC = c;
-
-            this.nA = -1;
-            this.nB = ac;
-            this.nC = ab;
-        }
-
-        internal Vertex GetVertex(int index) {
-            switch(index) {
-                case 0:
-                    return vA;
-                case 1:
-                    return vB;
-                default:
-                    return vC;
-            }
         }
 
         internal int Opposite(int neighbor) {

@@ -4,7 +4,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
     internal struct SliceBuffer {
 
-        private int vertexCount;
+        private readonly int vertexCount;
         private NativeArray<Side> sides;
         private NativeArray<bool> vertexMark;
 
@@ -38,7 +38,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             this.vertexMark.Dispose();
         }
 
-        internal void AddConections(NativeArray<Triangle> triangles) {
+        internal void AddConnections(NativeArray<Triangle> triangles) {
             int n = triangles.Length;
 
             for(int i = 0; i < n; ++i) {

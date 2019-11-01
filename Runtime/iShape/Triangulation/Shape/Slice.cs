@@ -1,8 +1,8 @@
 ﻿namespace iShape.Triangulation.Shape {
 
 	public struct Slice {
-		public int a;
-		public int b;
+		public readonly int a;
+		public readonly int b;
 
 		public Slice(int a, int b) {
 			this.a = a;

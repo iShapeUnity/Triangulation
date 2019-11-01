@@ -6,7 +6,7 @@ namespace iShape.Triangulation.Shape {
     internal static class PlainShapeNavigatorExt {
 
 		private struct SortData {
-			internal int index;
+			internal readonly int index;
 			internal readonly long factor;
 			private readonly int nature;
 

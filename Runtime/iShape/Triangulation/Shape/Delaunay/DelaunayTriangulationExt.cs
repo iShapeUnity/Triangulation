@@ -23,7 +23,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             var triangles = triangleStack.Convert();
 
             var sliceBuffer = new SliceBuffer(vertexCount, layout.slices, Allocator.Temp);
-            sliceBuffer.AddConections(triangles);
+            sliceBuffer.AddConnections(triangles);
 
             sliceBuffer.Dispose();
             layout.Dispose();

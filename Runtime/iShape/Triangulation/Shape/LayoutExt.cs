@@ -1,5 +1,4 @@
 using Unity.Collections;
-using UnityEngine.Assertions;
 using iShape.Geometry;
 using iShape.Support;
 
