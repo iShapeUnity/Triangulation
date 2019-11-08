@@ -1,6 +1,6 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
-using iShape.Support;
+using iShape.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 

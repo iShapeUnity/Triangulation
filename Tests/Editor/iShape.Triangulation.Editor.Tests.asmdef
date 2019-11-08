@@ -2,8 +2,7 @@
     "name": "iShape.Triangulation.Editor.Tests",
     "references": [
         "iShape.Triangulation.Runtime",
-        "iShape.Geometry.Runtime",
-        "iShape.Support.Runtime"
+        "iShape.Geometry.Runtime"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
