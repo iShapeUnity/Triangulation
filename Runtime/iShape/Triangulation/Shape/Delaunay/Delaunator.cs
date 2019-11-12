@@ -232,8 +232,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
             } else {
                 long sinAlpha = pay * pcx - pax * pcy;
                 long sinBeta = bax * bcy - bay * bcx;
-
-                return (float)sinAlpha * (float)cosBeta + (float)cosAlpha * (float)sinBeta >= -0.00001f;
+                // TODO think about this constant
+                return (float)sinAlpha * (float)cosBeta + (float)cosAlpha * (float)sinBeta >= -1000000000;
             }
         }
 
