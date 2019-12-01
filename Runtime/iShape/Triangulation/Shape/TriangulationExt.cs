@@ -1,10 +1,30 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
 using iShape.Triangulation.Util;
+using UnityEngine;
 
 namespace iShape.Triangulation.Shape {
 
     public static class TriangulationExt {
+
+        public static Mesh Triangulate(this PlainShape shape) {
+            int n = shape.points.Length;
+            var vertices = new Vector3[n];
+            for (int i = 0; i < n; ++i) {
+                var v = shape.iGeom.Float(shape.points[i]);
+                vertices[i] = new Vector3(v.x, v.y, 0);
+            }
+            var nTriangles = shape.Triangulate(Allocator.Temp);
+
+            var mesh = new Mesh {
+                vertices = vertices,
+                triangles = nTriangles.ToArray()
+            };
+            
+            nTriangles.Dispose();
+            
+            return mesh;
+        }
 
         public static NativeArray<int> Triangulate(this PlainShape shape, Allocator allocator) {
             var layout = shape.Split(Allocator.Temp);
