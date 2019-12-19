@@ -1,4 +1,4 @@
-﻿namespace iShape.Triangulation.Shape.Delaunay {
+﻿namespace iShape.Extension.Shape.Delaunay {
 
     internal struct Side {
 

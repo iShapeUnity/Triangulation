@@ -2,12 +2,12 @@
 using iShape.Geometry;
 using iShape.Collections;
 
-namespace iShape.Triangulation.Shape.Delaunay {
+namespace iShape.Extension.Shape.Delaunay {
 
-    internal struct Delaunator {
+    public struct Delaunator {
         private NativeArray<Triangle> triangles;
 
-        internal NativeArray<int> Indices(Allocator allocator) {
+        public NativeArray<int> Indices(Allocator allocator) {
             int n = triangles.Length;
             var result = new NativeArray<int>(3 * n, allocator);
             int i = 0;
@@ -25,7 +25,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return result;
         }
 
-        internal Delaunator(NativeArray<Triangle> triangles) {
+        public Delaunator(NativeArray<Triangle> triangles) {
             this.triangles = triangles;
         }
 

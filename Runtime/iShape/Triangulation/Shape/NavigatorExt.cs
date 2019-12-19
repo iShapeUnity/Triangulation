@@ -1,7 +1,7 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
 
-namespace iShape.Triangulation.Shape {
+namespace iShape.Extension.Shape {
 
     internal static class PlainShapeNavigatorExt {
 

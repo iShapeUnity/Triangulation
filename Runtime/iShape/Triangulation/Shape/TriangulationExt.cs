@@ -1,9 +1,9 @@
-﻿using Unity.Collections;
+﻿using iShape.Extension.Util;
+using Unity.Collections;
 using iShape.Geometry;
-using iShape.Triangulation.Util;
 using UnityEngine;
 
-namespace iShape.Triangulation.Shape {
+namespace iShape.Extension.Shape {
 
     public static class TriangulationExt {
 
@@ -51,7 +51,7 @@ namespace iShape.Triangulation.Shape {
 			}
         }
 
-        private static void Triangulate(int index, ref int counter, NativeArray<Link> links, NativeArray<int> triangles) {
+        public static void Triangulate(int index, ref int counter, NativeArray<Link> links, NativeArray<int> triangles) {
             var c = links[index];
 
             var a0 = links[c.next];

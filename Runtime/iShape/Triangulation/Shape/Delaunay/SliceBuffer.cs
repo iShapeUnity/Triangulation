@@ -1,14 +1,14 @@
 ﻿using Unity.Collections;
 
-namespace iShape.Triangulation.Shape.Delaunay {
+namespace iShape.Extension.Shape.Delaunay {
 
-    internal struct SliceBuffer {
+    public struct SliceBuffer {
 
         private readonly int vertexCount;
         private NativeArray<Side> sides;
         private NativeArray<bool> vertexMark;
 
-        internal SliceBuffer(int vertexCount, NativeArray<Slice> slices, Allocator allocator) {
+        public SliceBuffer(int vertexCount, NativeArray<Slice> slices, Allocator allocator) {
             this.vertexCount = vertexCount;
             this.vertexMark = new NativeArray<bool>(vertexCount, allocator);
             int n = slices.Length;
@@ -33,12 +33,12 @@ namespace iShape.Triangulation.Shape.Delaunay {
             Sort(sides);
         }
 
-        internal void Dispose() {
+        public void Dispose() {
             this.sides.Dispose();
             this.vertexMark.Dispose();
         }
 
-        internal void AddConnections(NativeArray<Triangle> triangles) {
+        public void AddConnections(NativeArray<Triangle> triangles) {
             int n = triangles.Length;
 
             for(int i = 0; i < n; ++i) {

@@ -2,9 +2,9 @@
 using iShape.Geometry;
 using iShape.Collections;
 
-namespace iShape.Triangulation.Shape.Delaunay {
+namespace iShape.Extension.Shape.Delaunay {
 
-	internal struct TriangleStack {
+	public struct TriangleStack {
 
 		private struct Edge {
 			internal readonly int a;            // vertex index
@@ -22,13 +22,13 @@ namespace iShape.Triangulation.Shape.Delaunay {
 		private NativeArray<Triangle> triangles;
 		private int counter;
 
-		internal TriangleStack(int count) {
+		public TriangleStack(int count) {
 			this.counter = 0;
 			this.edges = new DynamicArray<Edge>(8, Allocator.Temp);
 			this.triangles = new NativeArray<Triangle>(count, Allocator.Temp);
 		}
 
-		internal NativeArray<Triangle> Convert() {
+		public NativeArray<Triangle> Convert() {
 			edges.Dispose();
 			if (this.counter == triangles.Length) {
 				return triangles;
@@ -40,7 +40,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             }
 		}
 
-		internal void Reset() {
+		public void Reset() {
 			edges.RemoveAll();
 		}
 

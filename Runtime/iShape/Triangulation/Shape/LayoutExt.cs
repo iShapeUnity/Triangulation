@@ -2,7 +2,7 @@ using Unity.Collections;
 using iShape.Geometry;
 using iShape.Collections;
 
-namespace iShape.Triangulation.Shape {
+namespace iShape.Extension.Shape {
 
     public static class LayoutExt {
 

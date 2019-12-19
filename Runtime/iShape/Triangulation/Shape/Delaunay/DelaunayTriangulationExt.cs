@@ -1,9 +1,9 @@
-﻿using Unity.Collections;
+﻿using iShape.Extension.Util;
+using Unity.Collections;
 using iShape.Geometry;
-using iShape.Triangulation.Util;
 using UnityEngine;
 
-namespace iShape.Triangulation.Shape.Delaunay {
+namespace iShape.Extension.Shape.Delaunay {
 
     public static class DelaunayTriangulationExt {
 
@@ -58,7 +58,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return indices;
         }
 
-        private static void Triangulate(int index, NativeArray<Link> links, ref TriangleStack triangleStack) {
+        public static void Triangulate(int index, NativeArray<Link> links, ref TriangleStack triangleStack) {
 
             var c = links[index];
 

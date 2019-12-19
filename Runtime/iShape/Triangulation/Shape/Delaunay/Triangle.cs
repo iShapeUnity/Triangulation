@@ -1,8 +1,8 @@
 ﻿using iShape.Geometry;
 
-namespace iShape.Triangulation.Shape.Delaunay {
+namespace iShape.Extension.Shape.Delaunay {
 
-    internal struct Triangle {
+    public struct Triangle {
 
         internal readonly int index;
 

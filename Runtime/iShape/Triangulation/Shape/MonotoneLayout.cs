@@ -1,6 +1,6 @@
 using Unity.Collections;
 
-namespace iShape.Triangulation.Shape {
+namespace iShape.Extension.Shape {
 
     public struct MonotoneLayout {
 
