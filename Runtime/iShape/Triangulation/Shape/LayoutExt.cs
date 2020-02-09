@@ -1,6 +1,7 @@
 using Unity.Collections;
 using iShape.Geometry;
 using iShape.Collections;
+using iShape.Geometry.Container;
 
 namespace iShape.Extension.Shape {
 
@@ -51,7 +52,7 @@ namespace iShape.Extension.Shape {
             }
         }
 
-        public static MonotoneLayout Split(this iShape.Geometry.PlainShape shape, Allocator allocator) {
+        public static MonotoneLayout Split(this PlainShape shape, Allocator allocator) {
             var navigator = shape.GetNavigator(Allocator.Temp);
             var links = new DynamicArray<Link>(navigator.links, allocator);
             var natures = navigator.natures;

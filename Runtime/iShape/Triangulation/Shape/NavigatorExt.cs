@@ -1,5 +1,6 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
+using iShape.Geometry.Container;
 
 namespace iShape.Extension.Shape {
 
@@ -66,7 +67,7 @@ namespace iShape.Extension.Shape {
                     var nature = LinkNature.simple;
                     bool isCCW = IsCCW(a, b, c);
 
-                    if(layout.isHole) {
+                    if(!layout.isClockWise) {
                         if(A > B && B < C) {
                             if(isCCW) {
                                 nature = LinkNature.start;

@@ -1,17 +1,18 @@
 ﻿using iShape.Extension.Util;
-using Unity.Collections;
 using iShape.Geometry;
+using iShape.Geometry.Container;
+using Unity.Collections;
 using UnityEngine;
 
 namespace iShape.Extension.Shape {
 
     public static class TriangulationExt {
 
-        public static Mesh Triangulate(this PlainShape shape) {
+        public static Mesh Triangulate(this PlainShape shape, IntGeom iGeom) {
             int n = shape.points.Length;
             var vertices = new Vector3[n];
             for (int i = 0; i < n; ++i) {
-                var v = shape.iGeom.Float(shape.points[i]);
+                var v = iGeom.Float(shape.points[i]);
                 vertices[i] = new Vector3(v.x, v.y, 0);
             }
             var nTriangles = shape.Triangulate(Allocator.Temp);
