@@ -1,6 +1,6 @@
 ﻿using Unity.Collections;
 
-namespace iShape.Extension.Shape.Delaunay {
+namespace iShape.Triangulation.Shape.Delaunay {
 
     public struct SliceBuffer {
 

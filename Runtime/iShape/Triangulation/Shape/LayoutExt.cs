@@ -3,7 +3,7 @@ using iShape.Geometry;
 using iShape.Collections;
 using iShape.Geometry.Container;
 
-namespace iShape.Extension.Shape {
+namespace iShape.Triangulation.Shape {
 
     public static class LayoutExt {
 

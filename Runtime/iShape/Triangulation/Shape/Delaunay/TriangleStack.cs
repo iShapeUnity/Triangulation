@@ -2,7 +2,7 @@
 using iShape.Geometry;
 using iShape.Collections;
 
-namespace iShape.Extension.Shape.Delaunay {
+namespace iShape.Triangulation.Shape.Delaunay {
 
 	public struct TriangleStack {
 

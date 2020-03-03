@@ -1,6 +1,6 @@
 ﻿using iShape.Geometry;
 
-namespace iShape.Extension.Util {
+namespace iShape.Triangulation.Util {
 
 	public struct IntTriangle {
 

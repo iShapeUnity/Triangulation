@@ -1,6 +1,6 @@
 ﻿using iShape.Geometry;
 
-namespace iShape.Extension.Shape.Delaunay {
+namespace iShape.Triangulation.Shape.Delaunay {
 
     public struct Triangle {
 

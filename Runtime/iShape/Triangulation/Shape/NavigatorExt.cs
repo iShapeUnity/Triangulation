@@ -2,7 +2,7 @@
 using iShape.Geometry;
 using iShape.Geometry.Container;
 
-namespace iShape.Extension.Shape {
+namespace iShape.Triangulation.Shape {
 
     internal static class PlainShapeNavigatorExt {
 

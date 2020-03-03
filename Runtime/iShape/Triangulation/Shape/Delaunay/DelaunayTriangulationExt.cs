@@ -1,10 +1,10 @@
-﻿using iShape.Extension.Util;
+﻿using iShape.Triangulation.Util;
 using iShape.Geometry;
 using Unity.Collections;
 using iShape.Geometry.Container;
 using UnityEngine;
 
-namespace iShape.Extension.Shape.Delaunay {
+namespace iShape.Triangulation.Shape.Delaunay {
 
     public static class DelaunayTriangulationExt {
 

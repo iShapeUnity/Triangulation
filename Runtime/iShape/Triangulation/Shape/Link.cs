@@ -1,6 +1,6 @@
 using iShape.Geometry;
 
-namespace iShape.Extension.Shape {
+namespace iShape.Triangulation.Shape {
 
 	public struct Link {
 		public static readonly Link empty = new Link(0, 0, 0, Vertex.empty);

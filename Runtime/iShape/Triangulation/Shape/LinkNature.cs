@@ -1,4 +1,4 @@
-﻿namespace iShape.Extension.Shape {
+﻿namespace iShape.Triangulation.Shape {
 
 	enum LinkNature {
 		end = 0,

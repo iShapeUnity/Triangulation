@@ -1,10 +1,10 @@
-﻿using iShape.Extension.Util;
+﻿using iShape.Triangulation.Util;
 using iShape.Geometry;
 using iShape.Geometry.Container;
 using Unity.Collections;
 using UnityEngine;
 
-namespace iShape.Extension.Shape {
+namespace iShape.Triangulation.Shape {
 
     public static class TriangulationExt {
 

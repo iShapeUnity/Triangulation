@@ -1,6 +1,6 @@
 ﻿using Unity.Collections;
 
-namespace iShape.Extension.Shape {
+namespace iShape.Triangulation.Shape {
 
     internal struct ShapeNavigator {
 	    
