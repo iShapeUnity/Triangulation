@@ -66,14 +66,14 @@ namespace iShape.Triangulation.Shape {
             var slices = new DynamicArray<Slice>(16, allocator);
 
             int i = 0;
-            int j;
 
-        nextNode:
+            nextNode:
             while(i < n) {
                 int sortIndex = sortIndices[i];
                 var node = links[sortIndex];
                 var nature = natures[sortIndex];
 
+                int j;
                 switch(nature) {
 
                     case LinkNature.start:
