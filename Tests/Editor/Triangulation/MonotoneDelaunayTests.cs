@@ -4,6 +4,8 @@ using iShape.Triangulation.Shape.Delaunay;
 using Tests.Triangulation.Util;
 using Tests.Triangulation.Data;
 using Unity.Collections;
+using Triangle = Tests.Triangulation.Util.Triangle;
+
 
 namespace Tests.Triangulation {
 

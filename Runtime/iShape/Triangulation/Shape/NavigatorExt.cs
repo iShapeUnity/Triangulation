@@ -1,6 +1,5 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
-using iShape.Geometry.Container;
 
 namespace iShape.Triangulation.Shape {
 
@@ -38,8 +37,13 @@ namespace iShape.Triangulation.Shape {
             }
 		}
 
-		internal static ShapeNavigator GetNavigator(this PlainShape shape, Allocator allocator) {
-            int n = shape.points.Length;
+		internal static ShapeNavigator GetNavigator(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
+            int n;
+            if (extraPoints.Length > 0) {
+	            n = shape.points.Length + extraPoints.Length;
+            } else {
+	            n = shape.points.Length;
+            }
 
             var iPoints = new NativeArray<IntVector>(n, allocator);
             var links = new NativeArray<Link>(n, allocator);
@@ -67,40 +71,39 @@ namespace iShape.Triangulation.Shape {
                     var nature = LinkNature.simple;
                     bool isCCW = IsCCW(a, b, c);
 
-                    if(!layout.isClockWise) {
-                        if(A > B && B < C) {
-                            if(isCCW) {
-                                nature = LinkNature.start;
-                            } else {
-                                nature = LinkNature.split;
-                            }
-                        }
+                    if(layout.isClockWise) {
+	                    if(A > B && B < C) {
+		                    if(isCCW) {
+			                    nature = LinkNature.start;
+		                    } else {
+			                    nature = LinkNature.split;
+		                    }
+	                    }
 
-                        if(A < B && B > C) {
-                            if(isCCW) {
-                                nature = LinkNature.end;
-                            } else {
-                                nature = LinkNature.merge;
-                            }
-                        }
+	                    if(A < B && B > C) {
+		                    if(isCCW) {
+			                    nature = LinkNature.end;
+		                    } else {
+			                    nature = LinkNature.merge;
 
+		                    }
+	                    }
                     } else {
-                        if(A > B && B < C) {
-                            if(isCCW) {
-                                nature = LinkNature.start;
-                            } else {
-                                nature = LinkNature.split;
-                            }
-                        }
+	                    if(A > B && B < C) {
+		                    if(isCCW) {
+			                    nature = LinkNature.start;
+		                    } else {
+			                    nature = LinkNature.split;
+		                    }
+	                    }
 
-                        if(A < B && B > C) {
-                            if(isCCW) {
-                                nature = LinkNature.end;
-                            } else {
-                                nature = LinkNature.merge;
-
-                            }
-                        }
+	                    if(A < B && B > C) {
+		                    if(isCCW) {
+			                    nature = LinkNature.end;
+		                    } else {
+			                    nature = LinkNature.merge;
+		                    }
+	                    }
                     }
 
                     iPoints[self] = b;
@@ -122,6 +125,20 @@ namespace iShape.Triangulation.Shape {
                 }
             }
 
+            if (extraPoints.Length > 0) {
+	            int l = shape.points.Length;
+
+	            for(int k = 0; k < extraPoints.Length; ++k) {
+		            var p = extraPoints[k];
+		            var j = k + l;
+		            iPoints[j] = p;
+		            links[j] = new Link(j, j, j, new Vertex(j, p));
+		            natures[j] = LinkNature.extra;
+	            }
+            }
+            
+            // sort
+            
 			var dataList = new NativeArray<SortData>(n, Allocator.Temp);
 
 			for(int j = 0; j < n; ++j) {
@@ -129,7 +146,6 @@ namespace iShape.Triangulation.Shape {
 			}
 
 			Sort(dataList);
-
 
 			var indices = new NativeArray<int>(n, allocator);
 

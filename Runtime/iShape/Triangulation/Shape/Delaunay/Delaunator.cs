@@ -5,6 +5,8 @@ using iShape.Collections;
 namespace iShape.Triangulation.Shape.Delaunay {
 
     public struct Delaunator {
+        private int pathCount;
+        private int extraCount;
         private NativeArray<Triangle> triangles;
 
         public NativeArray<int> Indices(Allocator allocator) {
@@ -25,7 +27,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return result;
         }
 
-        public Delaunator(NativeArray<Triangle> triangles) {
+        public Delaunator(int pathCount, int extraCount, NativeArray<Triangle> triangles) {
+            this.pathCount = pathCount;
+            this.extraCount = extraCount;
             this.triangles = triangles;
         }
 
@@ -93,6 +97,64 @@ namespace iShape.Triangulation.Shape.Delaunay {
 			buffer.Dispose();
             visitMarks.Dispose();
 		}
+
+        public int Fix(NativeArray<int> indices)  {
+            int count = triangles.Length;
+
+            int minFixIndex = count;
+            
+            var origin = new DynamicArray<int>(indices, Allocator.Temp);
+            var buffer = new DynamicArray<int>(16, Allocator.Temp);
+
+            while(origin.Count > 0) {
+                buffer.RemoveAll();
+                for(int l = 0; l < origin.Count; ++l) {
+                    int i = origin[l];
+                    var triangle = this.triangles[i];
+
+                    for(int k = 0; k < 3; ++k) {
+                        
+                        int neighborIndex = triangle.GetNeighborByIndex(k);
+                        if(neighborIndex >= 0) {
+                            var neighbor = triangles[neighborIndex];
+                            if(this.Swap(triangle, neighbor)) {
+
+                                if (minFixIndex > neighborIndex) {
+                                    minFixIndex = neighborIndex;
+                                }
+                                if (minFixIndex > i) {
+                                    minFixIndex = i;
+                                }
+                                
+                                triangle = this.triangles[triangle.index];
+                                neighbor = this.triangles[neighbor.index];
+
+                                for(int j = 0; j < 3; ++j) {
+                                    int ni = triangle.GetNeighborByIndex(j);
+                                    if(ni >= 0 && ni != neighbor.index) {
+                                        buffer.Add(ni);
+                                    }
+                                }
+
+                                for(int j = 0; j < 3; ++j) {
+                                    int ni = neighbor.GetNeighborByIndex(j);
+                                    if(ni >= 0 && ni != triangle.index) {
+                                        buffer.Add(ni);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                origin.RemoveAll();
+                origin.Add(buffer);
+            }
+
+			origin.Dispose();
+			buffer.Dispose();
+
+            return minFixIndex;
+        }
 
         private bool Swap(Triangle abc, Triangle pbc) {
             int ai = abc.Opposite(pbc.index);    // opposite a-p
@@ -226,15 +288,10 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
             long cosAlpha = pax * pcx + pay * pcy;
             long cosBeta = bax * bcx + bay * bcy;
-
-            if(cosAlpha < 0 && cosBeta < 0) {
-                return false;
-            } else {
-                long sinAlpha = pay * pcx - pax * pcy;
-                long sinBeta = bax * bcy - bay * bcx;
-                // TODO think about this constant
-                return (float)sinAlpha * (float)cosBeta + (float)cosAlpha * (float)sinBeta >= -1000000000;
-            }
+            long sinAlpha = pay * pcx - pax * pcy;
+            long sinBeta = bax * bcy - bay * bcx;
+            // TODO think about this constant
+            return (float)sinAlpha * (float)cosBeta + (float)cosAlpha * (float)sinBeta >= -1000000000;
         }
 
         private static bool IsCCW(IntVector a, IntVector b, IntVector c) {

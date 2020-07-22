@@ -1,6 +1,5 @@
 ﻿using iShape.Triangulation.Util;
 using iShape.Geometry;
-using iShape.Geometry.Container;
 using Unity.Collections;
 using UnityEngine;
 
@@ -15,7 +14,9 @@ namespace iShape.Triangulation.Shape {
                 var v = iGeom.Float(shape.points[i]);
                 vertices[i] = new Vector3(v.x, v.y, 0);
             }
-            var nTriangles = shape.Triangulate(Allocator.Temp);
+            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
+            var nTriangles = shape.Triangulate(extraPoints, Allocator.Temp);
+            extraPoints.Dispose();
 
             var mesh = new Mesh {
                 vertices = vertices,
@@ -27,8 +28,8 @@ namespace iShape.Triangulation.Shape {
             return mesh;
         }
 
-        public static NativeArray<int> Triangulate(this PlainShape shape, Allocator allocator) {
-            var layout = shape.Split(Allocator.Temp);
+        public static NativeArray<int> Triangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
+            var layout = shape.Split(extraPoints, Allocator.Temp);
             int totalCount = shape.points.Length + ((shape.layouts.Length - 2) << 1);
 
 			int trianglesCount = 3 * totalCount;

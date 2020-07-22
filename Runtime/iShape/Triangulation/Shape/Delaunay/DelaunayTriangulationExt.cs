@@ -1,7 +1,6 @@
 ﻿using iShape.Triangulation.Util;
 using iShape.Geometry;
 using Unity.Collections;
-using iShape.Geometry.Container;
 using UnityEngine;
 
 namespace iShape.Triangulation.Shape.Delaunay {
@@ -15,8 +14,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 var v = iGeom.Float(shape.points[i]);
                 vertices[i] = new Vector3(v.x, v.y, 0);
             }
-            var nTriangles = shape.DelaunayTriangulate(Allocator.Temp);
-
+            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
+            var nTriangles = shape.DelaunayTriangulate(extraPoints, Allocator.Temp);
+            extraPoints.Dispose();
             var mesh = new Mesh {
                 vertices = vertices,
                 triangles = nTriangles.ToArray()
@@ -27,11 +27,12 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return mesh;
         }
         
-        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, Allocator allocator) {
-            var layout = shape.Split(Allocator.Temp);
+        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
+            var layout = shape.Split(extraPoints, Allocator.Temp);
 
-            int vertexCount = shape.points.Length;
-            int totalCount = vertexCount + ((shape.layouts.Length - 2) << 1);
+            int extraCount = extraPoints.Length;
+            int vertexCount = shape.points.Length + extraCount;
+            int totalCount = vertexCount + ((shape.layouts.Length - 2) << 1) + extraCount;
 
             var triangleStack = new TriangleStack(totalCount);
 
@@ -49,7 +50,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             sliceBuffer.Dispose();
             layout.Dispose();
 
-            var delaunator = new Delaunator(triangles);
+            var delaunator = new Delaunator(shape.points.Length, extraCount, triangles);
             delaunator.Build();
 
             var indices = delaunator.Indices(allocator);
@@ -59,7 +60,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return indices;
         }
 
-        public static void Triangulate(int index, NativeArray<Link> links, ref TriangleStack triangleStack) {
+        private static void Triangulate(int index, NativeArray<Link> links, ref TriangleStack triangleStack) {
 
             var c = links[index];
 

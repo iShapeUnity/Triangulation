@@ -5,6 +5,7 @@ using Tests.Triangulation.Data;
 using NUnit.Framework;
 using Unity.Collections;
 using UnityEngine;
+using Triangle = Tests.Triangulation.Util.Triangle;
 
 namespace Tests.Triangulation {
 
@@ -13,7 +14,7 @@ namespace Tests.Triangulation {
 		private NativeArray<int> Triangulate(int index) {
 			var iGeom = IntGeom.DefGeom;
 
-			Vector2[][] data = ComplexTests.data[index];
+			var data = ComplexTests.data[index];
 
 			var hull = iGeom.Int(data[0]);
 			var holes = new IntVector[data.Length - 1][];
