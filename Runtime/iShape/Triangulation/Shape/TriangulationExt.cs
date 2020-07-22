@@ -27,6 +27,13 @@ namespace iShape.Triangulation.Shape {
             
             return mesh;
         }
+        
+        public static NativeArray<int> Triangulate(this PlainShape shape, Allocator allocator) {
+            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
+            var triangles = Triangulate(shape, extraPoints, allocator);
+            extraPoints.Dispose();
+            return triangles;
+        }
 
         public static NativeArray<int> Triangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
             var layout = shape.Split(extraPoints, Allocator.Temp);
