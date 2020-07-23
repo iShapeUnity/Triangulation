@@ -26,6 +26,28 @@ namespace iShape.Triangulation.Shape.Delaunay {
             this.nB = -1;
             this.nC = -1;
         }
+        
+        internal Triangle(int index, Vertex a, Vertex b, Vertex c, int nA, int nB, int nC) {
+            this.index = index;
+            this.vA = a;
+            this.vB = b;
+            this.vC = c;
+
+            this.nA = nA;
+            this.nB = nB;
+            this.nC = nC;
+        }
+        
+        internal Vertex Vertex(int i) {
+            switch(i) {
+                case 0:
+                    return vA;
+                case 1:
+                    return vB;
+                default:
+                    return vC;
+            }
+        }
 
         internal int Opposite(int neighbor) {
             if(nA == neighbor) {
@@ -35,7 +57,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return nB == neighbor ? 1 : 2;
         }
         
-        internal Vertex oppositeVertex(int neighbor) {
+        internal Vertex OppositeVertex(int neighbor) {
             if(nA == neighbor) {
                 return vA;
             }
@@ -43,8 +65,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return nB == neighbor ? vB : vC;
         }
 
-        internal int GetNeighborByIndex(int index) {
-            switch(index) {
+        internal int Neighbor(int i) {
+            switch(i) {
                 case 0:
                     return nA;
                 case 1:
@@ -54,16 +76,16 @@ namespace iShape.Triangulation.Shape.Delaunay {
             }
         }
 
-        internal int GetNeighborByVertex(int vertex) {
-            if(vA.index == vertex) {
+        internal int FindNeighbor(int vertexIndex) {
+            if(vA.index == vertexIndex) {
                 return nA;
             }
 
-            return vB.index == vertex ? nB : nC;
+            return vB.index == vertexIndex ? nB : nC;
         }
 
-        internal void SetNeighborByIndex(int index, int value) {
-            switch(index) {
+        internal void SetNeighbor(int i, int value) {
+            switch(i) {
                 case 0:
                     nA = value;
                     break;
@@ -72,6 +94,20 @@ namespace iShape.Triangulation.Shape.Delaunay {
                     break;
                 default:
                     nC = value;
+                    break;
+            }
+        }
+        
+        internal void SetVertex(int i, Vertex value) {
+            switch(i) {
+                case 0:
+                    vA = value;
+                    break;
+                case 1:
+                    vB = value;
+                    break;
+                default:
+                    vC = value;
                     break;
             }
         }

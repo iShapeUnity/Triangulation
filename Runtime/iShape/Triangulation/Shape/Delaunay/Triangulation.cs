@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-    public static class DelaunayTriangulationExt {
+    public static class Triangulation {
 
         public static Mesh DelaunayTriangulate(this PlainShape shape, IntGeom iGeom) {
             int n = shape.points.Length;
@@ -57,7 +57,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             sliceBuffer.Dispose();
             layout.Dispose();
 
-            var delaunator = new Delaunator(shape.points.Length, extraCount, triangles);
+            var delaunator = new Delaunay(shape.points.Length, extraCount, triangles);
             delaunator.Build();
 
             var indices = delaunator.Indices(allocator);

@@ -4,10 +4,10 @@ using iShape.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-    public struct Delaunator {
-        private int pathCount;
-        private int extraCount;
-        private NativeArray<Triangle> triangles;
+    public struct Delaunay {
+        internal readonly int pathCount;
+        internal int extraCount;
+        internal NativeArray<Triangle> triangles;
 
         public NativeArray<int> Indices(Allocator allocator) {
             int n = triangles.Length;
@@ -27,7 +27,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return result;
         }
 
-        public Delaunator(int pathCount, int extraCount, NativeArray<Triangle> triangles) {
+        public Delaunay(int pathCount, int extraCount, NativeArray<Triangle> triangles) {
             this.pathCount = pathCount;
             this.extraCount = extraCount;
             this.triangles = triangles;
@@ -52,7 +52,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
                     for(int k = 0; k < 3; ++k) {
                         
-                        int neighborIndex = triangle.GetNeighborByIndex(k);
+                        int neighborIndex = triangle.Neighbor(k);
                         if(neighborIndex >= 0) {
                             var neighbor = triangles[neighborIndex];
                             if(this.Swap(triangle, neighbor)) {
@@ -61,14 +61,14 @@ namespace iShape.Triangulation.Shape.Delaunay {
                                 neighbor = this.triangles[neighbor.index];
 
                                 for(int j = 0; j < 3; ++j) {
-                                    int ni = triangle.GetNeighborByIndex(j);
+                                    int ni = triangle.Neighbor(j);
                                     if(ni >= 0 && ni != neighbor.index) {
                                         buffer.Add(ni);
                                     }
                                 }
 
                                 for(int j = 0; j < 3; ++j) {
-                                    int ni = neighbor.GetNeighborByIndex(j);
+                                    int ni = neighbor.Neighbor(j);
                                     if(ni >= 0 && ni != triangle.index) {
                                         buffer.Add(ni);
                                     }
@@ -114,7 +114,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
                     for(int k = 0; k < 3; ++k) {
                         
-                        int neighborIndex = triangle.GetNeighborByIndex(k);
+                        int neighborIndex = triangle.Neighbor(k);
                         if(neighborIndex >= 0) {
                             var neighbor = triangles[neighborIndex];
                             if(this.Swap(triangle, neighbor)) {
@@ -130,14 +130,14 @@ namespace iShape.Triangulation.Shape.Delaunay {
                                 neighbor = this.triangles[neighbor.index];
 
                                 for(int j = 0; j < 3; ++j) {
-                                    int ni = triangle.GetNeighborByIndex(j);
+                                    int ni = triangle.Neighbor(j);
                                     if(ni >= 0 && ni != neighbor.index) {
                                         buffer.Add(ni);
                                     }
                                 }
 
                                 for(int j = 0; j < 3; ++j) {
-                                    int ni = neighbor.GetNeighborByIndex(j);
+                                    int ni = neighbor.Neighbor(j);
                                     if(ni >= 0 && ni != triangle.index) {
                                         buffer.Add(ni);
                                     }
@@ -195,7 +195,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 break;
             }
 
-            var p = pbc.oppositeVertex(abc.index);
+            var p = pbc.OppositeVertex(abc.index);
 
             bool isPrefect = IsPrefect(p.point, c.point, a.point, b.point);
 
@@ -205,10 +205,10 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
             bool isABP_CCW = IsCCW(a.point, b.point, p.point);
 
-            int bp = pbc.GetNeighborByVertex(c.index);
-            int cp = pbc.GetNeighborByVertex(b.index);
-            int ab = abc.GetNeighborByIndex(ci);
-            int ac = abc.GetNeighborByIndex(bi);
+            int bp = pbc.FindNeighbor(c.index);
+            int cp = pbc.FindNeighbor(b.index);
+            int ab = abc.Neighbor(ci);
+            int ac = abc.Neighbor(bi);
 
             // abc -> abp
             Triangle abp;
@@ -255,7 +255,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             }
 
             // bp (pbc) is now edge of abp
-            int bpIndex = pbc.GetNeighborByVertex(c.index); // c - angle
+            int bpIndex = pbc.FindNeighbor(c.index); // c - angle
             if(bpIndex >= 0) {
                 var neighbor = this.triangles[bpIndex];
                 neighbor.UpdateOpposite(pbc.index, abp.index);

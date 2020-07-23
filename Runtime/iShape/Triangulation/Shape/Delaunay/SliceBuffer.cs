@@ -55,9 +55,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
                         side.edge = 2;
                         this.sides[sideIndex] = side;
                     } else {
-                        triangle.SetNeighborByIndex(2, side.triangle);
+                        triangle.SetNeighbor(2, side.triangle);
                         var neighbor = triangles[side.triangle];
-                        neighbor.SetNeighborByIndex(side.edge, i);
+                        neighbor.SetNeighbor(side.edge, i);
                         triangles[side.triangle] = neighbor;
                         triangles[i] = triangle;
                     }
@@ -71,9 +71,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
                         side.edge = 1;
                         this.sides[sideIndex] = side;
                     } else {
-                        triangle.SetNeighborByIndex(1, side.triangle);
+                        triangle.SetNeighbor(1, side.triangle);
                         var neighbor = triangles[side.triangle];
-                        neighbor.SetNeighborByIndex(side.edge, i);
+                        neighbor.SetNeighbor(side.edge, i);
                         triangles[side.triangle] = neighbor;
                         triangles[i] = triangle;
                     }
@@ -87,9 +87,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
                         side.edge = 0;
                         this.sides[sideIndex] = side;
                     } else {
-                        triangle.SetNeighborByIndex(0, side.triangle);
+                        triangle.SetNeighbor(0, side.triangle);
                         var neighbor = triangles[side.triangle];
-                        neighbor.SetNeighborByIndex(side.edge, i);
+                        neighbor.SetNeighbor(side.edge, i);
                         triangles[side.triangle] = neighbor;
                         triangles[i] = triangle;
                     }
