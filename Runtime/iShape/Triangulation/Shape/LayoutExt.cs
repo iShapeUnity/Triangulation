@@ -1,6 +1,7 @@
 using Unity.Collections;
 using iShape.Geometry;
 using iShape.Collections;
+using iShape.Geometry.Container;
 
 namespace iShape.Triangulation.Shape {
 

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using iShape.Geometry;
+using iShape.Geometry.Container;
 using iShape.Triangulation.Shape.Delaunay;
 using Tests.Triangulation.Util;
 using Tests.Triangulation.Data;

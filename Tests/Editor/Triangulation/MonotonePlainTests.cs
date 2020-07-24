@@ -4,7 +4,9 @@ using iShape.Triangulation.Shape;
 using Tests.Triangulation.Util;
 using Tests.Triangulation.Data;
 using Unity.Collections;
-using System.Collections.Generic;
+using iShape.Geometry.Container;
+using Triangle = Tests.Triangulation.Util.Triangle;
+
 
 namespace Tests.Triangulation {
 

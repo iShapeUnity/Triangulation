@@ -1,11 +1,12 @@
 ﻿using Unity.Collections;
 using iShape.Geometry;
+using iShape.Geometry.Container;
 
 namespace iShape.Triangulation.Shape {
 
     internal static class PlainShapeNavigatorExt {
 
-		private struct SortData {
+		private readonly struct SortData {
 			internal readonly int index;
 			internal readonly long factor;
 			private readonly int nature;

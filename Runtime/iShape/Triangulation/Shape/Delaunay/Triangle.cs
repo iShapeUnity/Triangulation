@@ -48,6 +48,14 @@ namespace iShape.Triangulation.Shape.Delaunay {
                     return vC;
             }
         }
+        
+        internal int FindIndex(int vertexIndex) {
+            if(vA.index == vertexIndex) {
+                return 0;
+            }
+
+            return vB.index == vertexIndex ? 1 : 2;
+        }
 
         internal int Opposite(int neighbor) {
             if(nA == neighbor) {

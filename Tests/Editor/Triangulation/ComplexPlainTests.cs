@@ -1,10 +1,12 @@
 ﻿using iShape.Geometry;
+using iShape.Geometry.Container;
 using iShape.Triangulation.Shape;
 using Tests.Triangulation.Util;
 using Tests.Triangulation.Data;
 using NUnit.Framework;
 using Unity.Collections;
 using UnityEngine;
+using Triangle = Tests.Triangulation.Util.Triangle;
 
 namespace Tests.Triangulation {
 
