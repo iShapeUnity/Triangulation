@@ -28,21 +28,14 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return mesh;
         }
         
-        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, Allocator allocator) {
-            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
-            var triangles = DelaunayTriangulate(shape, extraPoints, allocator);
-            extraPoints.Dispose();
-            return triangles;
-        }
-        
-        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
+        public static Delaunay Delaunay(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
             var layout = shape.Split(extraPoints, Allocator.Temp);
 
             int extraCount = extraPoints.Length;
             int vertexCount = shape.points.Length + extraCount;
             int totalCount = vertexCount + ((shape.layouts.Length - 2) << 1) + extraCount;
 
-            var triangleStack = new TriangleStack(totalCount);
+            var triangleStack = new TriangleStack(totalCount, allocator);
 
             for(int i = 0; i < layout.indices.Length; ++i) {
                 int index = layout.indices[i];
@@ -58,12 +51,31 @@ namespace iShape.Triangulation.Shape.Delaunay {
             sliceBuffer.Dispose();
             layout.Dispose();
 
-            var delaunator = new Delaunay(shape.points.Length, extraCount, triangles);
-            delaunator.Build();
-
-            var indices = delaunator.Indices(allocator);
-
-            triangles.Dispose();
+            var delaunay = new Delaunay(shape.points.Length, extraCount, triangles);
+            
+            delaunay.Build();
+            
+            return delaunay;
+        }
+        
+        public static Delaunay Delaunay(this PlainShape shape, Allocator allocator) {
+            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
+            var delaunay = shape.Delaunay(extraPoints, allocator);
+            extraPoints.Dispose();
+            return delaunay;
+        }
+        
+        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, Allocator allocator) {
+            var extraPoints = new NativeArray<IntVector>(0, Allocator.Temp);
+            var triangles = DelaunayTriangulate(shape, extraPoints, allocator);
+            extraPoints.Dispose();
+            return triangles;
+        }
+        
+        public static NativeArray<int> DelaunayTriangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
+            var delaunay = shape.Delaunay(extraPoints, Allocator.Temp);
+            var indices = delaunay.Indices(allocator);
+            delaunay.Dispose();
 
             return indices;
         }

@@ -8,7 +8,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
     public static class Tessellation {
         
-        public static NativeArray<Vertex> Tessellate(this Delaunay self, float maxAngle, float minEdge, Allocator allocator) {
+        public static NativeArray<Vertex> Tessellate(ref this Delaunay self, float maxAngle, long minEdge, Allocator allocator) {
             if (0.5f * Mathf.PI > maxAngle || maxAngle > Mathf.PI) {
                 return new NativeArray<Vertex>(0, allocator);
             }
@@ -20,10 +20,11 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
             float maxCos = Mathf.Cos(maxAngle);
             float sqrCos = maxCos * maxCos;
-            float sqrMinEdge = minEdge * minEdge;
+            long sqrMinEdge = minEdge * minEdge;
             
             var triangles = new DynamicArray<Triangle>(self.triangles, allocator);
-
+            var indices = new NativeArray<int>(4, Allocator.Temp);
+            
             while (i < triangles.Count) {
                 var triangle = triangles[i];
 
@@ -116,7 +117,9 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 );
 
                 if (t2Neighbor >= 0) {
-                    triangles[t2Neighbor].UpdateOpposite(i, n);
+                    var t2n = triangles[t2Neighbor];
+                    t2n.UpdateOpposite(i, n);
+                    triangles[t2Neighbor] = t2n;
                 }
 
                 triangles.Add(t2);
@@ -133,19 +136,27 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 );
 
                 if (t3Neighbor >= 0) {
-                    triangles[t3Neighbor].UpdateOpposite(j, n + 1);
+                    var t3n = triangles[t3Neighbor];
+                    t3n.UpdateOpposite(j, n + 1);
+                    triangles[t3Neighbor] = t3n;
                 }
 
                 triangles.Add(t3);
-
-                var indices = new NativeArray<int>(4, Allocator.Temp);
-                int minIndex = self.Fix(indices);
-                indices.Dispose();
+                
+                indices[0] = i;
+                indices[1] = j;
+                indices[2] = n;
+                indices[3] = n + 1;
+                
+                int minIndex = Delaunay.Fix(ref triangles, indices);
+                
                 if (minIndex < i) {
                     i = minIndex;
                 }
             }
 
+            indices.Dispose();
+            
             if (extraPoints.Count > 0) {
                 self.triangles.Dispose();
                 self.triangles = triangles.Convert();

@@ -55,7 +55,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
                         int neighborIndex = triangle.Neighbor(k);
                         if(neighborIndex >= 0) {
                             var neighbor = triangles[neighborIndex];
-                            if(this.Swap(triangle, neighbor)) {
+                            if(Swap(ref this.triangles, triangle, neighbor)) {
 
                                 triangle = this.triangles[triangle.index];
                                 neighbor = this.triangles[neighbor.index];
@@ -98,8 +98,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
             visitMarks.Dispose();
 		}
 
-        public int Fix(NativeArray<int> indices)  {
-            int count = triangles.Length;
+        internal static int Fix(ref DynamicArray<Triangle> triangles, NativeArray<int> indices)  {
+            int count = triangles.Count;
 
             int minFixIndex = count;
             
@@ -110,14 +110,14 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 buffer.RemoveAll();
                 for(int l = 0; l < origin.Count; ++l) {
                     int i = origin[l];
-                    var triangle = this.triangles[i];
+                    var triangle = triangles[i];
 
                     for(int k = 0; k < 3; ++k) {
                         
                         int neighborIndex = triangle.Neighbor(k);
                         if(neighborIndex >= 0) {
                             var neighbor = triangles[neighborIndex];
-                            if(this.Swap(triangle, neighbor)) {
+                            if(Swap(ref triangles.array, triangle, neighbor)) {
 
                                 if (minFixIndex > neighborIndex) {
                                     minFixIndex = neighborIndex;
@@ -126,8 +126,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
                                     minFixIndex = i;
                                 }
                                 
-                                triangle = this.triangles[triangle.index];
-                                neighbor = this.triangles[neighbor.index];
+                                triangle = triangles[triangle.index];
+                                neighbor = triangles[neighbor.index];
 
                                 for(int j = 0; j < 3; ++j) {
                                     int ni = triangle.Neighbor(j);
@@ -156,7 +156,11 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return minFixIndex;
         }
 
-        private bool Swap(Triangle abc, Triangle pbc) {
+        public void Dispose() {
+            this.triangles.Dispose();
+        }
+
+        private static bool Swap(ref NativeArray<Triangle> triangles, Triangle abc, Triangle pbc) {
             int ai = abc.Opposite(pbc.index);    // opposite a-p
             int bi;                              // edge bc
             int ci;
@@ -249,21 +253,21 @@ namespace iShape.Triangulation.Shape.Delaunay {
             // ac (abc) is now edge of acp
             // int acIndex = abc.GetNeighborByIndex(bi); // b - angle
             if(acIndex >= 0) {
-                var neighbor = this.triangles[acIndex];
+                var neighbor = triangles[acIndex];
                 neighbor.UpdateOpposite(abc.index, acp.index);
-                this.triangles[acIndex] = neighbor;
+                triangles[acIndex] = neighbor;
             }
 
             // bp (pbc) is now edge of abp
             int bpIndex = pbc.FindNeighbor(c.index); // c - angle
             if(bpIndex >= 0) {
-                var neighbor = this.triangles[bpIndex];
+                var neighbor = triangles[bpIndex];
                 neighbor.UpdateOpposite(pbc.index, abp.index);
-                this.triangles[bpIndex] = neighbor;
+                triangles[bpIndex] = neighbor;
             }
 
-            this.triangles[abc.index] = abp;
-            this.triangles[pbc.index] = acp;
+            triangles[abc.index] = abp;
+            triangles[pbc.index] = acp;
 
             return true;
         }

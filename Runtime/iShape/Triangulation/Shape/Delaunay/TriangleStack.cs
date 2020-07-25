@@ -4,7 +4,7 @@ using iShape.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-	public struct TriangleStack {
+	internal struct TriangleStack {
 
 		private struct Edge {
 			internal readonly int a;            // vertex index
@@ -20,27 +20,29 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
 		private DynamicArray<Edge> edges;
 		private NativeArray<Triangle> triangles;
+		private readonly Allocator allocator;
 		private int counter;
 
-		public TriangleStack(int count) {
+		internal TriangleStack(int count, Allocator allocator) {
 			this.counter = 0;
-			this.edges = new DynamicArray<Edge>(8, Allocator.Temp);
-			this.triangles = new NativeArray<Triangle>(count, Allocator.Temp);
+			this.allocator = allocator;
+			this.edges = new DynamicArray<Edge>(8, allocator);
+			this.triangles = new NativeArray<Triangle>(count, allocator);
 		}
 
-		public NativeArray<Triangle> Convert() {
+		internal NativeArray<Triangle> Convert() {
 			edges.Dispose();
 			if (this.counter == triangles.Length) {
 				return triangles;
 			} else {
-				var newTriangles = new NativeArray<Triangle>(counter, Allocator.Temp);
+				var newTriangles = new NativeArray<Triangle>(counter, allocator);
 				newTriangles.Slice(0, counter).CopyFrom(triangles.Slice(0, counter));
 				triangles.Dispose();
 				return newTriangles;
             }
 		}
 
-		public void Reset() {
+		internal void Reset() {
 			edges.RemoveAll();
 		}
 
