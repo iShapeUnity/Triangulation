@@ -7,7 +7,7 @@ Complex polygon triangulation, tessellation and split into convex polygons. A fa
 
 ## Triangulation with extra points
 <p align="center">
-<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/Readme/eagle_triangles_extra_points.svg" width="800" />
+<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/eagle_triangles_extra_points.svg" width="800" />
 </p>
 
 ## Tessellation
