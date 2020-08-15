@@ -201,7 +201,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
             var p = pbc.OppositeVertex(abc.index);
 
-            bool isPrefect = IsPrefect(p.point, c.point, a.point, b.point);
+            bool isPrefect = IsDelaunay(p.point, c.point, a.point, b.point);
 
             if(isPrefect) {
                 return false;
@@ -271,31 +271,46 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
             return true;
         }
+        private static bool IsDelaunay(IntVector p0, IntVector p1, IntVector p2, IntVector p3) {
+            long x01 = p0.x - p1.x;
+            long x03 = p0.x - p3.x;
+            long x12 = p1.x - p2.x;
+            long x32 = p3.x - p2.x;
 
-        private static bool IsPrefect(IntVector p, IntVector a, IntVector b, IntVector c) {
-            bool isPABccw = IsCCW(p, a, b);
-            bool isPCBccw = IsCCW(p, c, b);
-            return isPABccw == isPCBccw || IsDelaunay(p, a, b, c);
-        }
+            long y01 = p0.y - p1.y;
+            long y03 = p0.y - p3.y;
+            long y12 = p1.y - p2.y;
+            long y23 = p2.y - p3.y;
 
-        private static bool IsDelaunay(IntVector p, IntVector a, IntVector b, IntVector c) {
+            long cosA = x01 * x03 + y01 * y03;
+            long cosB = x12 * x32 - y12 * y23;
+        
+            if (cosA < 0 && cosB < 0) {
+                return false;
+            }
+        
+            if (cosA >= 0 && cosB >= 0) {
+                return true;
+            }
+        
+            // we can not just compare
+            // sinA * cosB + cosA * sinB ? 0
+            // cause we need weak Delaunay condition
 
-            long bax = a.x - b.x;
-            long bay = a.y - b.y;
-            long bcx = c.x - b.x;
-            long bcy = c.y - b.y;
+            long sinA = x01 * y03 - x03 * y01;
+            long sinB = x12 * y23 + x32 * y12;
 
-            long pcx = c.x - p.x;
-            long pcy = c.y - p.y;
-            long pax = a.x - p.x;
-            long pay = a.y - p.y;
+            long sl01 = x01 * x01 + y01 * y01;
+            long sl03 = x03 * x03 + y03 * y03;
+            long sl12 = x12 * x12 + y12 * y12;
+            long sl23 = x32 * x32 + y23 * y23;
 
-            long cosAlpha = pax * pcx + pay * pcy;
-            long cosBeta = bax * bcx + bay * bcy;
-            long sinAlpha = pay * pcx - pax * pcy;
-            long sinBeta = bax * bcy - bay * bcx;
-            // TODO think about this constant
-            return (float)sinAlpha * (float)cosBeta + (float)cosAlpha * (float)sinBeta >= -1000000000;
+            double max0 = sl01 > sl03 ? sl01 : sl03;
+            double max1 = sl12 > sl23 ? sl12 : sl23;
+
+            double sinAB = ((double) sinA * (double) cosB + (double) cosA * (double) sinB) / (max0 * max1);
+
+            return sinAB < 0.001;
         }
 
         private static bool IsCCW(IntVector a, IntVector b, IntVector c) {
