@@ -42,3 +42,23 @@ Complex polygon triangulation, tessellation and split into convex polygons. A fa
 
 💡 More then 100 tests
 
+## Installation
+
+add imports:
+```csharp
+using iShape.Geometry;
+using iShape.Triangulation.Shape;
+using iShape.Triangulation.Shape.Delaunay;
+```
+### [Package Manager](https://docs.unity3d.com/Manual/Packages.html/)
+
+Add the following to your `[Project]/Packages/manifest.json`:
+```csharp
+{
+  "dependencies": {
+    "com.ishape.geometry": "https://github.com/iShapeUnity/Geometry.git#0.0.1",
+    "com.ishape.triangulation": "https://github.com/iShapeUnity/Triangulation.git#0.0.1",
+  }
+}
+```
+
