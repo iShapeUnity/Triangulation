@@ -2,22 +2,22 @@
 Complex polygon triangulation, tessellation and split into convex polygons. A fast O(n*log(n)) algorithm based on "Triangulation of monotone polygons". The result can be represented as a Delaunay triangulation.
 ## Delaunay triangulation
 <p align="center">
-<img src="https://github.com/iShapeUnity/Triangulation/tree/master/Readme/star_triangle.svg" width="500"/>
+<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/star_triangle.svg" width="500"/>
 </p>
 
 ## Triangulation with extra points
 <p align="center">
-<img src="https://github.com/iShape-Swift/iShapeTriangulation/blob/master/Readme/eagle_triangles_extra_points.svg" width="800" />
+<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/Readme/eagle_triangles_extra_points.svg" width="800" />
 </p>
 
 ## Tessellation
 <p align="center">
-<img src="https://github.com/iShape-Swift/iShapeTriangulation/blob/master/Readme/eagle_tessellation.svg" width="800" />
+<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/eagle_tessellation.svg" width="800" />
 </p>
 
 ## Centroid net
 <p align="center">
-<img src="https://github.com/iShape-Swift/iShapeTriangulation/blob/master/Readme/eagle_centroid.svg" width="800" />
+<img src="https://github.com/iShapeUnity/Triangulation/blob/master/Readme/eagle_centroid.svg" width="800" />
 </p>
 
 ## Features
