@@ -5,7 +5,7 @@ using Unity.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-    public static class Breaker {
+    public static class CentroidNet {
 
         private readonly struct Detail {
             internal readonly IntVector center;
