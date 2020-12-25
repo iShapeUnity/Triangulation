@@ -31,7 +31,7 @@ namespace iShape.Triangulation.Shape {
             }
         }
 
-        private struct DualSub {
+        private readonly struct DualSub {
             internal readonly Link next;        // top branch
             internal readonly int middle;
             internal readonly Link prev;        // bottom branch
@@ -49,7 +49,7 @@ namespace iShape.Triangulation.Shape {
             }
         }
 
-        private struct Bridge {
+        private readonly struct Bridge {
             internal readonly Link a;
             internal readonly Link b;
             internal Slice Slice => new Slice(a.vertex.index, b.vertex.index);

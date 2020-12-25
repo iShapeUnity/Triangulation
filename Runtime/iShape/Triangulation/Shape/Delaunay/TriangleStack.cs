@@ -6,7 +6,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
 	internal struct TriangleStack {
 
-		private struct Edge {
+		private readonly struct Edge {
 			internal readonly int a;            // vertex index
 			internal readonly int b;            // vertex index
 			internal readonly int neighbor;     // prev triangle index
