@@ -1,40 +1,43 @@
 using iShape.Collections;
+using iShape.Geometry;
+using iShape.Geometry.Container;
 using Unity.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-        internal struct Polygon {
-            internal readonly struct Edge {
-                internal readonly int triangleIndex;
-                internal readonly int neighbor;
-                internal readonly int a;
-                internal readonly int b;
+    internal struct Polygon {
+        internal readonly struct Edge {
+            internal readonly int triangleIndex;
+            internal readonly int neighbor;
+            internal readonly int a;
+            internal readonly int b;
 
-                internal Edge(int triangleIndex, int neighbor, int a, int b) {
-                    this.triangleIndex = triangleIndex;
-                    this.neighbor = neighbor;
-                    this.a = a;
-                    this.b = b;
-                }
+            internal Edge(int triangleIndex, int neighbor, int a, int b) {
+                this.triangleIndex = triangleIndex;
+                this.neighbor = neighbor;
+                this.a = a;
+                this.b = b;
             }
+        }
 
-            internal DynamicArray<Edge> edges;
-            private DynamicArray<Link> links;
-        
-            internal NativeArray<int> Indices(Allocator allocator) {
-                int n = this.links.Count;
-                var result = new NativeArray<int>(n + 1, allocator);
-                result[0] = n;
-                var link = this.links[0];
-                var i = 1;
-                do {
-                    result[i] = link.vertex.index;
-                    link = this.links[link.next];
-                    i += 1;
-                } while (i <= n);
-                return result;
-            }
-        
+        internal DynamicArray<Edge> edges;
+        private DynamicArray<Link> links;
+
+        internal NativeArray<int> Indices(Allocator allocator) {
+            int n = this.links.Count;
+            var result = new NativeArray<int>(n + 1, allocator);
+            result[0] = n;
+            var link = this.links[0];
+            var i = 1;
+            do {
+                result[i] = link.vertex.index;
+                link = this.links[link.next];
+                i += 1;
+            } while (i <= n);
+
+            return result;
+        }
+
         internal bool Add(Edge edge, Triangle triangle) {
             var v = triangle.OppositeVertex(edge.triangleIndex);
 
@@ -50,7 +53,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             if (apa > 0) {
                 return false;
             }
-            
+
             // b0 <- b1 <- p
 
             var link_b1 = this.links[edge.b];
@@ -92,13 +95,12 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
         internal Polygon(Triangle triangle) {
             const int capacity = 16;
-            
+
             this.links = new DynamicArray<Link>(capacity, Allocator.Temp);
             this.links.Add(new Link(2, 0, 1, triangle.Vertex(0)));
             this.links.Add(new Link(0, 1, 2, triangle.Vertex(1)));
             this.links.Add(new Link(1, 2, 0, triangle.Vertex(2)));
-            
-            
+
             this.edges = new DynamicArray<Edge>(capacity, Allocator.Temp);
 
             var ab = triangle.Neighbor(2);
@@ -116,8 +118,13 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 this.edges.Add(new Edge(triangle.index, ca, 2, 0));
             }
         }
+
+        internal void Dispose() {
+            this.edges.Dispose();
+            this.links.Dispose();
+        }
     }
-    
+
     public static class Polygons {
         
         public static NativeArray<int> ConvexPolygonsIndices(this Delaunay self, Allocator allocator) {
@@ -148,7 +155,56 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 }
 
                 result.Add(polygon.Indices(Allocator.Temp));
+                
+                polygon.Dispose();
             }
+
+            visited.Dispose();
+
+            return result.Convert();
+        }
+        
+        public static PlainShape ConvexPolygons(this Delaunay self, PlainShape shape, Allocator allocator) {
+            int n = self.triangles.Length;
+            var points = shape.points;
+            var result = new DynamicPlainShape(2 * shape.points.Length, 16, allocator);
+            var visited = new NativeArray<bool>(n, Allocator.Temp);
+        
+            for (int i = 0; i < n; ++i) {
+                if (visited[i]) {
+                    continue;
+                }
+
+                var first = self.triangles[i];
+                visited[i] = true;
+                var polygon = new Polygon(first);
+
+                while (polygon.edges.Count > 0) {
+                    var edge = polygon.edges.Last();
+                    polygon.edges.RemoveLast();
+                    if (visited[edge.neighbor]) {
+                        continue;
+                    }
+
+                    var next = self.triangles[edge.neighbor];
+                    if (polygon.Add(edge, next)) {
+                        visited[edge.neighbor] = true;
+                    }
+                }
+
+                var indices = polygon.Indices(Allocator.Temp);
+                polygon.Dispose();
+                int count = indices.Length - 1;
+                var vertices = new NativeArray<IntVector>(count, Allocator.Temp);
+                for (int j = 0; j < count; ++j) {
+                    vertices[j] = points[indices[j + 1]];
+                }
+                result.Add(vertices, true);
+                indices.Dispose();
+                vertices.Dispose();
+            }
+            
+            visited.Dispose();
 
             return result.Convert();
         }
