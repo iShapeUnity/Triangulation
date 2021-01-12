@@ -1,6 +1,6 @@
 ﻿namespace iShape.Triangulation.Shape {
 
-	public struct Slice {
+	public readonly struct Slice {
 		public readonly int a;
 		public readonly int b;
 

@@ -60,8 +60,8 @@ namespace iShape.Triangulation.Shape {
             }
         }
 
-        public static MonotoneLayout Split(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
-            var navigator = shape.GetNavigator(extraPoints, Allocator.Temp);
+        public static MonotoneLayout Split(this PlainShape shape, long maxEdge, NativeArray<IntVector> extraPoints, Allocator allocator) {
+            var navigator = shape.GetNavigator(maxEdge, extraPoints, Allocator.Temp);
             var links = new DynamicArray<Link>(navigator.links, allocator);
             var natures = navigator.natures;
 			var sortIndices = navigator.indices;
@@ -455,7 +455,10 @@ namespace iShape.Triangulation.Shape {
             dSubs.Dispose();
             navigator.Dispose();
 
-            return new MonotoneLayout(links.Convert(), slices.Convert(), indices.Convert());
+            int pathCount = navigator.pathCount;
+            int extraCount = navigator.extraCount;
+
+            return new MonotoneLayout(pathCount, extraCount, links.Convert(), slices.Convert(), indices.Convert());
         }
 
         private static Bridge Connect(this ref DynamicArray<Link> links, int ai, int bi) {

@@ -3,12 +3,16 @@
 namespace iShape.Triangulation.Shape {
 
     internal struct ShapeNavigator {
-	    
-        internal readonly NativeArray<Link> links;
-        internal readonly NativeArray<LinkNature> natures;
-		internal readonly NativeArray<int> indices;
 
-		internal ShapeNavigator(NativeArray<Link> links, NativeArray<LinkNature> natures, NativeArray<int> indices) {
+	    internal readonly int pathCount;
+	    internal readonly int extraCount;
+        internal NativeArray<Link> links;
+        internal NativeArray<LinkNature> natures;
+		internal NativeArray<int> indices;
+
+		internal ShapeNavigator(int pathCount, int extraCount, NativeArray<Link> links, NativeArray<LinkNature> natures, NativeArray<int> indices) {
+			this.pathCount = pathCount;
+			this.extraCount = extraCount;
 			this.links = links;
             this.natures = natures;
 			this.indices = indices;
@@ -19,7 +23,5 @@ namespace iShape.Triangulation.Shape {
             this.natures.Dispose();
 			this.indices.Dispose();
 		}
-
     }
-
 }

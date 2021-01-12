@@ -1,6 +1,6 @@
 ﻿namespace iShape.Triangulation.Shape {
 
-	enum LinkNature {
+	internal enum LinkNature {
 		end = 0,
 		start = 1,
 		split = 2,

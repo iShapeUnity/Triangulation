@@ -1,11 +1,12 @@
 using iShape.Collections;
 using iShape.Geometry;
 using iShape.Geometry.Container;
+using iShape.Geometry.Polygon;
 using Unity.Collections;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
-    internal struct Polygon {
+    internal struct ConvexPolygon {
         internal readonly struct Edge {
             internal readonly int triangleIndex;
             internal readonly int neighbor;
@@ -23,17 +24,12 @@ namespace iShape.Triangulation.Shape.Delaunay {
         internal DynamicArray<Edge> edges;
         private DynamicArray<Link> links;
 
-        internal NativeArray<int> Indices(Allocator allocator) {
+        internal NativeArray<IntVector> Points(Allocator allocator) {
             int n = this.links.Count;
-            var result = new NativeArray<int>(n + 1, allocator);
-            result[0] = n;
-            var link = this.links[0];
-            var i = 1;
-            do {
-                result[i] = link.vertex.index;
-                link = this.links[link.next];
-                i += 1;
-            } while (i <= n);
+            var result = new NativeArray<IntVector>(n, allocator);
+            for (int i = 0; i < n; ++i) {
+                result[i] = this.links[i].vertex.point;
+            }
 
             return result;
         }
@@ -93,7 +89,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
             return true;
         }
 
-        internal Polygon(Triangle triangle) {
+        internal ConvexPolygon(Triangle triangle) {
             const int capacity = 16;
 
             this.links = new DynamicArray<Link>(capacity, Allocator.Temp);
@@ -126,48 +122,17 @@ namespace iShape.Triangulation.Shape.Delaunay {
     }
 
     public static class Polygons {
-        
-        public static NativeArray<int> ConvexPolygonsIndices(this Delaunay self, Allocator allocator) {
-            int n = self.triangles.Length;
-            var result = new DynamicArray<int>(4 * n, allocator);
-            var visited = new NativeArray<bool>(n, Allocator.Temp);
-        
-            for (int i = 0; i < n; ++i) {
-                if (visited[i]) {
-                    continue;
-                }
 
-                var first = self.triangles[i];
-                visited[i] = true;
-                var polygon = new Polygon(first);
-
-                while (polygon.edges.Count > 0) {
-                    var edge = polygon.edges.Last();
-                    polygon.edges.RemoveLast();
-                    if (visited[edge.neighbor]) {
-                        continue;
-                    }
-
-                    var next = self.triangles[edge.neighbor];
-                    if (polygon.Add(edge, next)) {
-                        visited[edge.neighbor] = true;
-                    }
-                }
-
-                result.Add(polygon.Indices(Allocator.Temp));
-                
-                polygon.Dispose();
-            }
-
-            visited.Dispose();
-
-            return result.Convert();
+        public static List ConvexPolygons(this PlainShape self, Allocator allocator, IntGeom intGeom) {
+            var delaunay = self.Delaunay(Allocator.Temp);
+            var list = delaunay.ConvexPolygons(intGeom, allocator);
+            delaunay.Dispose();
+            return list;
         }
         
-        public static PlainShape ConvexPolygons(this Delaunay self, PlainShape shape, Allocator allocator) {
-            int n = self.triangles.Length;
-            var points = shape.points;
-            var result = new DynamicPlainShape(2 * shape.points.Length, 16, allocator);
+        public static List ConvexPolygons(this Delaunay self, IntGeom intGeom, Allocator allocator) {
+            int n = self.triangles.Count;
+            var dynamicList = new DynamicList(self.points.Count, n >> 1, allocator);
             var visited = new NativeArray<bool>(n, Allocator.Temp);
         
             for (int i = 0; i < n; ++i) {
@@ -177,38 +142,35 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
                 var first = self.triangles[i];
                 visited[i] = true;
-                var polygon = new Polygon(first);
+                var convexPolygon = new ConvexPolygon(first);
 
-                while (polygon.edges.Count > 0) {
-                    var edge = polygon.edges.Last();
-                    polygon.edges.RemoveLast();
+                while (convexPolygon.edges.Count > 0) {
+                    var edge = convexPolygon.edges.Last();
+                    convexPolygon.edges.RemoveLast();
                     if (visited[edge.neighbor]) {
                         continue;
                     }
 
                     var next = self.triangles[edge.neighbor];
-                    if (polygon.Add(edge, next)) {
+                    if (convexPolygon.Add(edge, next)) {
                         visited[edge.neighbor] = true;
                     }
                 }
 
-                var indices = polygon.Indices(Allocator.Temp);
-                polygon.Dispose();
-                int count = indices.Length - 1;
-                var vertices = new NativeArray<IntVector>(count, Allocator.Temp);
-                for (int j = 0; j < count; ++j) {
-                    vertices[j] = points[indices[j + 1]];
-                }
-                result.Add(vertices, true);
-                indices.Dispose();
-                vertices.Dispose();
+                var iPoints = convexPolygon.Points(Allocator.Temp);
+                var points = intGeom.Float(iPoints, Allocator.Temp);
+                var polygon = new Polygon(points, allocator);
+                dynamicList.Add(polygon);
+
+                iPoints.Dispose();
+                points.Dispose();
+                convexPolygon.Dispose();
             }
             
             visited.Dispose();
 
-            return result.Convert();
+            return dynamicList.Convert();
         }
-        
     }
 
 }

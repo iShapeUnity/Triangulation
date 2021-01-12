@@ -119,6 +119,16 @@ namespace iShape.Triangulation.Shape.Delaunay {
                     break;
             }
         }
+        
+        internal void Update(Vertex vertex) {
+            if (vA.index != vertex.index) {
+                vA = vertex;
+            } else if (vB.index != vertex.index) {
+                vB = vertex;
+            } else if (vC.index != vertex.index) {
+                vC = vertex;
+            }
+        }
 
         internal void UpdateOpposite(int oldNeighbor, int newNeighbor) {
             if(nA == oldNeighbor) {
@@ -134,6 +144,16 @@ namespace iShape.Triangulation.Shape.Delaunay {
             if(nC == oldNeighbor) {
                 nC = newNeighbor;
             }
+        }
+        
+        internal int AdjacentNeighbor(int vertex, int neighbor) {
+            if (vA.index != vertex && nA != neighbor) {
+                return nA;
+            }
+            if (vB.index != vertex && nB != neighbor) {
+                return nB;
+            }
+            return nC;
         }
     }
 

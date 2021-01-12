@@ -1,11 +1,37 @@
-﻿using Unity.Collections;
+﻿using iShape.Collections;
+using Unity.Collections;
 using iShape.Geometry;
 using iShape.Geometry.Container;
+using UnityEngine;
 
 namespace iShape.Triangulation.Shape {
 
     internal static class PlainShapeNavigatorExt {
+	    private struct Node {
+		    internal readonly int index;
+		    internal IntVector point;
 
+		    internal Node(int index, IntVector point) {
+			    this.index = index;
+			    this.point = point;
+		    }
+	    }
+
+	    private struct SplitLayout {
+		    internal NativeArray<PathLayout> layouts;
+		    internal NativeArray<Node> nodes;
+		    
+		    internal SplitLayout(NativeArray<PathLayout> layouts, NativeArray<Node> nodes) {
+			    this.layouts = layouts;
+			    this.nodes = nodes;
+		    }
+
+		    internal void Dispose() {
+			    this.layouts.Dispose();
+			    this.nodes.Dispose();
+		    }
+	    }
+	    
 		private readonly struct SortData {
 			internal readonly int index;
 			internal readonly long factor;
@@ -38,39 +64,47 @@ namespace iShape.Triangulation.Shape {
             }
 		}
 
-		internal static ShapeNavigator GetNavigator(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
-            int n;
-            if (extraPoints.Length > 0) {
-	            n = shape.points.Length + extraPoints.Length;
+		internal static ShapeNavigator GetNavigator(this PlainShape shape, long maxEdge, NativeArray<IntVector> extraPoints, Allocator allocator) {
+			SplitLayout splitLayout;
+			if (maxEdge == 0) {
+				splitLayout = shape.Plain(Allocator.Temp);
+			} else {
+				splitLayout = shape.Split(maxEdge, Allocator.Temp);
+			}
+			
+			int pathCount = splitLayout.nodes.Length;
+			int extraCount = extraPoints.Length;
+			
+			int n;
+            if (extraCount > 0) {
+	            n = pathCount + extraCount;
             } else {
-	            n = shape.points.Length;
+	            n = pathCount;
             }
 
-            var iPoints = new NativeArray<IntVector>(n, allocator);
             var links = new NativeArray<Link>(n, allocator);
-
             var natures = new NativeArray<LinkNature>(n, allocator);
 
-            int m = shape.layouts.Length;
+            int m = splitLayout.layouts.Length;
             for(int j = 0; j < m; ++j) {
-                var layout = shape.layouts[j];
+                var layout = splitLayout.layouts[j];
                 var prev = layout.end - 1;
 
                 var self = layout.end;
                 var next = layout.begin;
 
-                var a = shape.points[prev];
-                var b = shape.points[self];
+                var a = splitLayout.nodes[prev];
+                var b = splitLayout.nodes[self];
 
-                var A = a.BitPack;
-                var B = b.BitPack;
+                var A = a.point.BitPack;
+                var B = b.point.BitPack;
 
                 while(next <= layout.end) {
-                    var c = shape.points[next];
-                    var C = c.BitPack;
+                    var c = splitLayout.nodes[next];
+                    var C = c.point.BitPack;
 
                     var nature = LinkNature.simple;
-                    bool isCCW = IsCCW(a, b, c);
+                    bool isCCW = IsCCW(a.point, b.point, c.point);
 
                     if(layout.isClockWise) {
 	                    if(A > B && B < C) {
@@ -107,10 +141,9 @@ namespace iShape.Triangulation.Shape {
 	                    }
                     }
 
-                    iPoints[self] = b;
+                    var verNature = b.index < shape.points.Length ? Vertex.Nature.origin : Vertex.Nature.extraPath;
 
-                    links[self] = new Link(prev, self, next, new Vertex(self, b));
-
+                    links[self] = new Link(prev, self, next, new Vertex(self, verNature, b.point));
                     natures[self] = nature;
 
                     a = b;
@@ -126,14 +159,13 @@ namespace iShape.Triangulation.Shape {
                 }
             }
 
-            if (extraPoints.Length > 0) {
-	            int l = shape.points.Length;
+            splitLayout.Dispose();
 
+            if (extraCount > 0) {
 	            for(int k = 0; k < extraPoints.Length; ++k) {
 		            var p = extraPoints[k];
-		            var j = k + l;
-		            iPoints[j] = p;
-		            links[j] = new Link(j, j, j, new Vertex(j, p));
+		            var j = k + pathCount;
+		            links[j] = new Link(j, j, j, new Vertex(j, Vertex.Nature.extraInner, p));
 		            natures[j] = LinkNature.extra;
 	            }
             }
@@ -143,7 +175,8 @@ namespace iShape.Triangulation.Shape {
 			var dataList = new NativeArray<SortData>(n, Allocator.Temp);
 
 			for(int j = 0; j < n; ++j) {
-				dataList[j] = new SortData(j, iPoints[j].BitPack, (int)natures[j]);
+				var p = links[j].vertex.point;
+				dataList[j] = new SortData(j, p.BitPack, (int)natures[j]);
 			}
 
 			Sort(dataList);
@@ -157,19 +190,14 @@ namespace iShape.Triangulation.Shape {
 
 			while(i < n) {
 				var x0 = dataList[i];
-
 				indices[i] = x0.index;
-
 				if(x0.factor == x1.factor) {
-					int index = links[x1.index].vertex.index;
+					var v = links[x1.index].vertex;
 
 					do {
 						var link = links[x0.index];
-
-						links[x0.index] = new Link(link.prev, link.self, link.next, new Vertex(index, link.vertex.point));
-
+						links[x0.index] = new Link(link.prev, link.self, link.next, new Vertex(v.index, v.nature, v.point));
 						++i;
-
 						if(i < n) {
 							x0 = dataList[i];
 							indices[i] = x0.index;
@@ -177,18 +205,14 @@ namespace iShape.Triangulation.Shape {
 							break;
 						}
 					} while(x0.factor == x1.factor);
-
 				}
 				x1 = x0;
-
 				++i;
-
 			}
 
 			dataList.Dispose();
-			iPoints.Dispose();
 
-			return new ShapeNavigator(links, natures, indices);
+			return new ShapeNavigator(pathCount, extraCount, links, natures, indices);
         }
 
 		private static void Sort(NativeArray<SortData> array) {
@@ -307,7 +331,72 @@ namespace iShape.Triangulation.Shape {
 
             return m0 < m1;
         }
+		
+	    private static SplitLayout Split(this PlainShape self, long maxEgeSize, Allocator allocator) {
+		    var originalCount = self.points.Length;
+		    var nodes = new DynamicArray<Node>(originalCount, allocator);
+		    var layouts = new DynamicArray<PathLayout>(originalCount, allocator);
+		    var sqrMaxSize = maxEgeSize * maxEgeSize;
 
+		    var begin = 0;
+		    var originalIndex = 0;
+		    var extraIndex = originalCount;
+
+		    for (int j = 0; j < self.layouts.Length; ++j) {
+			    var layout = self.layouts[j];
+				var last = layout.end;
+				var a = self.points[last];
+				var length = 0;
+            
+				for (int i = layout.begin; i <= layout.end; ++i) {
+					var b = self.points[i];
+					var dx = b.x - a.x;
+					var dy = b.y - a.y;
+					var sqrSize = dx * dx + dy * dy;
+					if (sqrSize > sqrMaxSize) {
+						var l = (long) Mathf.Sqrt(sqrSize);
+						int s = (int) (l / maxEgeSize);
+						double ds = s;
+						double sx = dx / ds;
+						double sy = dy / ds;
+						double fx = 0;
+						double fy = 0;
+						for (int k = 1; k < s; ++k) {
+							fx += sx;
+							fy += sy;
+
+							long x = a.x + (long) fx;
+							long y = a.y + (long) fy;
+							nodes.Add(new Node(extraIndex, new IntVector(x, y)));
+							extraIndex += 1;
+						}
+
+						length += s - 1;
+					}
+
+					length += 1;
+					nodes.Add(new Node(originalIndex, b));
+					originalIndex += 1;
+					a = b;
+				}
+
+				layouts.Add(new PathLayout(begin, length, layout.isClockWise));
+				begin += length;
+		    }
+
+		    return new SplitLayout(layouts.Convert(), nodes.Convert());
+	    }
+    
+	    private static SplitLayout Plain(this PlainShape self, Allocator allocator) {
+		    var nodes = new NativeArray<Node>(self.points.Length, allocator);
+		    for (int i = 0; i < self.points.Length; ++i) {
+			    nodes[i] = new Node(i, self.points[i]);
+		    }
+
+		    var layouts = new NativeArray<PathLayout>(self.layouts, allocator);
+
+		    return new SplitLayout(layouts, nodes);
+	    }
     }
 
 }

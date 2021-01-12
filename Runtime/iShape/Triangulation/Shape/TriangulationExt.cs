@@ -37,7 +37,7 @@ namespace iShape.Triangulation.Shape {
         }
 
         public static NativeArray<int> Triangulate(this PlainShape shape, NativeArray<IntVector> extraPoints, Allocator allocator) {
-            var layout = shape.Split(extraPoints, Allocator.Temp);
+            var layout = shape.Split(0, extraPoints, Allocator.Temp);
             int totalCount = shape.points.Length + ((shape.layouts.Length - 2) << 1);
 
 			int trianglesCount = 3 * totalCount;
