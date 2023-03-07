@@ -1,7 +1,31 @@
 {
-    "name": "iShape.Triangulation.Runtime",
-	"excludePlatforms": [],
-	"references": [
-        "iShape.Geometry.Runtime"
-    ]
+    "name": "iShape.Triangulation",
+    "rootNamespace": "",
+    "references": [
+        "iShape.Geometry",
+        "Unity.Collections",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.ishape.geometry",
+            "expression": "0.0.2"
+        },
+        {
+            "name": "com.unity.mathematics",
+            "expression": "1.2.6"
+        },
+        {
+            "name": "com.unity.collections",
+            "expression": "1.2.4"
+        }
+    ],
+    "noEngineReferences": false
 }

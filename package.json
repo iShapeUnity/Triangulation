@@ -1,20 +1,25 @@
 {
-    "name": "com.ishape.triangulation",
-    "displayName": "iShape.Triangulation",
-    "version": "0.0.1",
-    "unity": "2022.2",
-    "description": "Complex polygon triangulation. A fast O(n*log(n)) algorithm based on 'Triangulation of monotone polygons'. The result can be represented as a Delaunay triangulation.",
-    "keywords": [
-        "iShape",
-        "triangulation",
-        "tesselation",
-        "centroid"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/iShapeUnity/Triangulation.git",
-    },
-    "dependencies": {
-        "com.ishape.geometry": "0.0.1"
-     }
+  "name": "com.ishape.triangulation",
+  "version": "0.0.2",
+  "displayName": "iShape.Triangulation",
+  "description": "Complex polygon triangulation. A fast O(n*log(n)) algorithm based on 'Triangulation of monotone polygons'. The result can be represented as a Delaunay triangulation.",
+  "unity": "2022.2",
+  "keywords": [
+    "iShape",
+    "triangulation",
+    "tesselation",
+    "centroid"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "iShape",
+    "email": "nailxsharipov@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iShapeUnity/Triangulation.git"
+  },
+  "dependencies": {
+    "com.ishape.geometry": "0.0.2"
+  }
 }
