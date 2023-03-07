@@ -44,21 +44,12 @@ Complex polygon triangulation, tessellation and split into convex polygons. A fa
 
 ## Installation
 
-add imports:
-```csharp
-using iShape.Geometry;
-using iShape.Triangulation.Shape;
-using iShape.Triangulation.Shape.Delaunay;
-```
-### [Package Manager](https://docs.unity3d.com/Manual/Packages.html/)
+To use iShape.Triangulation in your Unity project, follow these steps:
 
-Add the following to your `[Project]/Packages/manifest.json`:
-```csharp
-{
-  "dependencies": {
-    "com.ishape.geometry": "https://github.com/iShapeUnity/Geometry.git#0.0.1",
-    "com.ishape.triangulation": "https://github.com/iShapeUnity/Triangulation.git#0.0.1",
-  }
-}
-```
-
+- Open your Unity project.
+- In the top menu, select "Window" > "Package Manager".
+- Click on the "+" button in the top-left corner of the Package Manager window.
+- Select "Add package from git URL...".
+- Enter the following URL: https://github.com/iShapeUnity/Triangulation.git
+- Click the "Add" button.
+- Wait for the package to be imported.
