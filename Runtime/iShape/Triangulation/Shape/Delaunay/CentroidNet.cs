@@ -4,6 +4,7 @@ using iShape.Geometry.Container;
 using iShape.Geometry.Extension;
 using iShape.Geometry.Polygon;
 using Unity.Collections;
+using UnityEngine;
 
 namespace iShape.Triangulation.Shape.Delaunay {
 
@@ -143,7 +144,7 @@ namespace iShape.Triangulation.Shape.Delaunay {
                             var lastPrevPair = current.Vertex(left).point;
                             path.Add(lastPrevPair.Center(v.point));
 
-                            path.array.Reverse();
+                            path.Reverse();
 
                             path.Add(details[i].center);
 
@@ -257,6 +258,17 @@ namespace iShape.Triangulation.Shape.Delaunay {
 
         private static IntVector Center(this IntVector self, IntVector point) {
             return new IntVector((self.x + point.x) / 2, (self.y + point.y) / 2);
+        }
+        
+        private static void Reverse(this NativeList<Vector3> self) {
+            int length = self.Length;
+            int n = self.Length >> 1;
+            for (int i = 0, j = length - 1; i < n; ++i, --j) {
+                var a = self[i];
+                var b = self[j];
+                self[j] = a;
+                self[i] = b;
+            }
         }
 
     }

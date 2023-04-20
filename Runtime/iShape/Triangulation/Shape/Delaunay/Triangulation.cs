@@ -71,7 +71,6 @@ namespace iShape.Triangulation.Shape.Delaunay {
             sliceBuffer.AddConnections(triangles);
 
             sliceBuffer.Dispose();
-            layout.Dispose();
 
             Delaunay delaunay;
             if (extraPoints.Length == 0 && maxEdge == 0) {
@@ -86,6 +85,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 points.Dispose();
             }
 
+            layout.Dispose();
+            
             delaunay.Build();
             
             return delaunay;

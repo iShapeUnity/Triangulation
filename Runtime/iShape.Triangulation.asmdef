@@ -16,7 +16,7 @@
     "versionDefines": [
         {
             "name": "com.ishape.geometry",
-            "expression": "0.0.2"
+            "expression": "0.0.3"
         },
         {
             "name": "com.unity.mathematics",
