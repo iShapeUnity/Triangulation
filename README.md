@@ -57,5 +57,5 @@ To use iShape.Triangulation in your Unity project, follow these steps:
 
 ## Demo
 
-The [TriangulationDebug](https://github.com/iShapeUnity/TriangulationDebug) project is a samll demo project with some show case.
+The [TriangulationDebug](https://github.com/iShapeUnity/TriangulationDebug) project is a samll demo project with some showcases.
 
