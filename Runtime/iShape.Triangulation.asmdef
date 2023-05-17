@@ -24,7 +24,7 @@
         },
         {
             "name": "com.unity.collections",
-            "expression": "1.2.4"
+            "expression": "2.1.4"
         }
     ],
     "noEngineReferences": false
