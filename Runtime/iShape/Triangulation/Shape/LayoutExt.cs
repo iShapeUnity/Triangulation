@@ -6,10 +6,9 @@ using iShape.Geometry.Container;
 namespace iShape.Triangulation.Shape {
 
     public static class LayoutExt {
-
         private struct Sub {
-            internal Link next;          // top branch
-            internal Link prev;          // bottom branch
+            internal Link next; // top branch
+            internal Link prev; // bottom branch
             internal readonly bool isEmpty;
 
             internal Sub(bool isEmpty) {
@@ -32,16 +31,16 @@ namespace iShape.Triangulation.Shape {
         }
 
         private readonly struct DualSub {
-            internal readonly Link next;        // top branch
+            internal readonly Link next; // top branch
             internal readonly int middle;
-            internal readonly Link prev;        // bottom branch
+            internal readonly Link prev; // bottom branch
 
             internal DualSub(Sub nextSub, Sub prevSub) {
                 this.next = nextSub.next;
                 this.middle = nextSub.prev.self;
                 this.prev = prevSub.prev;
             }
-            
+
             internal DualSub(Link next, int middle, Link prev) {
                 this.next = next;
                 this.middle = middle;
@@ -64,7 +63,7 @@ namespace iShape.Triangulation.Shape {
             var navigator = shape.GetNavigator(maxEdge, extraPoints, Allocator.Temp);
             var links = new DynamicArray<Link>(navigator.links, allocator);
             var natures = navigator.natures;
-			var sortIndices = navigator.indices;
+            var sortIndices = navigator.indices;
 
             int n = sortIndices.Length;
 
@@ -76,13 +75,13 @@ namespace iShape.Triangulation.Shape {
             int i = 0;
 
             nextNode:
-            while(i < n) {
+            while (i < n) {
                 int sortIndex = sortIndices[i];
                 var node = links[sortIndex];
                 var nature = natures[sortIndex];
 
                 int j;
-                switch(nature) {
+                switch (nature) {
 
                     case LinkNature.start:
                         subs.Add(new Sub(node));
@@ -90,71 +89,73 @@ namespace iShape.Triangulation.Shape {
                         goto nextNode;
                     case LinkNature.extra:
                         j = 0;
-                    
-                    while (j < dSubs.Count) {
 
-                        var dSub = dSubs[j];
-                        var pA = dSub.next.vertex.point;
-                        var pB = links[dSub.next.next].vertex.point;
-                        var pC = links[dSub.prev.prev].vertex.point;
-                        var pD = dSub.prev.vertex.point;
+                        while (j < dSubs.Count) {
 
-                        var p = node.vertex.point;
+                            var dSub = dSubs[j];
+                            var pA = dSub.next.vertex.point;
+                            var pB = links[dSub.next.next].vertex.point;
+                            var pC = links[dSub.prev.prev].vertex.point;
+                            var pD = dSub.prev.vertex.point;
 
-                        if (IsTetragonContain(p, pA, pB, pC, pD)) {
-                            var hand = links[dSub.middle];
-                            slices.Add(new Slice(hand.vertex.index, node.vertex.index));
-                            links.ConnectExtraPrev(hand.self, node.self);
-                             
-                            dSubs[j] = new DualSub(links[dSub.next.self], node.self, links[dSub.prev.self]);
+                            var p = node.vertex.point;
 
-                            i += 1;
-                            goto nextNode;
-                        }
+                            if (IsTetragonContain(p, pA, pB, pC, pD)) {
+                                var hand = links[dSub.middle];
+                                slices.Add(new Slice(hand.vertex.index, node.vertex.index));
+                                links.ConnectExtraPrev(hand.self, node.self);
 
-                        j += 1;
+                                dSubs[j] = new DualSub(links[dSub.next.self], node.self, links[dSub.prev.self]);
 
-                    }   //  while dSubs
-
-                    j = 0;
-                    
-                    while (j < subs.Count) {
-                        var sub = subs[j];
-
-                        var pA = sub.next.vertex.point;
-                        var pB = links[sub.next.next].vertex.point;
-                        var pC = links[sub.prev.prev].vertex.point;
-                        var pD = sub.prev.vertex.point;
-
-                        var p = node.vertex.point;
-                        
-                        if (IsTetragonContain(p, pA, pB, pC, pD)) {
-                            if (!sub.isEmpty) {
-                                if (pA.x > pD.x) {
-                                    var hand = sub.next;
-                                    slices.Add(new Slice(hand.vertex.index, node.vertex.index));
-                                    var newHandIndex = links.ConnectExtraNext(hand.self, node.self);
-                                    dSubs.Add(new DualSub(links[newHandIndex], node.self, links[sub.prev.self]));
-                                } else {
-                                    var hand = sub.prev;
-                                    slices.Add(new Slice(hand.vertex.index, node.vertex.index));
-                                    var newHandIndex = links.ConnectExtraPrev(hand.self, node.self);
-                                    dSubs.Add(new DualSub(links[sub.next.self], node.self, links[newHandIndex]));
-                                }
-                            } else {
-                                var hand = links[sub.next.self];
-                                slices.Add(new Slice(hand.vertex.index, b: node.vertex.index));
-                                var newPrev = links.ConnectExtraPrev(hand.self, node.self);
-                                dSubs.Add(new DualSub(links[hand.self], node.self, links[newPrev]));
+                                i += 1;
+                                goto nextNode;
                             }
-                            subs.Exclude(j);
-                            i += 1;
-                            goto nextNode;
+
+                            j += 1;
+
+                        } //  while dSubs
+
+                        j = 0;
+
+                        while (j < subs.Count) {
+                            var sub = subs[j];
+
+                            var pA = sub.next.vertex.point;
+                            var pB = links[sub.next.next].vertex.point;
+                            var pC = links[sub.prev.prev].vertex.point;
+                            var pD = sub.prev.vertex.point;
+
+                            var p = node.vertex.point;
+
+                            if (IsTetragonContain(p, pA, pB, pC, pD)) {
+                                if (!sub.isEmpty) {
+                                    if (pA.x > pD.x) {
+                                        var hand = sub.next;
+                                        slices.Add(new Slice(hand.vertex.index, node.vertex.index));
+                                        var newHandIndex = links.ConnectExtraNext(hand.self, node.self);
+                                        dSubs.Add(new DualSub(links[newHandIndex], node.self, links[sub.prev.self]));
+                                    } else {
+                                        var hand = sub.prev;
+                                        slices.Add(new Slice(hand.vertex.index, node.vertex.index));
+                                        var newHandIndex = links.ConnectExtraPrev(hand.self, node.self);
+                                        dSubs.Add(new DualSub(links[sub.next.self], node.self, links[newHandIndex]));
+                                    }
+                                } else {
+                                    var hand = links[sub.next.self];
+                                    slices.Add(new Slice(hand.vertex.index, b: node.vertex.index));
+                                    var newPrev = links.ConnectExtraPrev(hand.self, node.self);
+                                    dSubs.Add(new DualSub(links[hand.self], node.self, links[newPrev]));
+                                }
+
+                                subs.Exclude(j);
+                                i += 1;
+                                goto nextNode;
+                            }
+
+                            j += 1;
                         }
 
-                        j += 1;
-                    }
-                    break;
+                        break;
                     case LinkNature.merge:
 
                         var newNextSub = new Sub(true);
@@ -162,11 +163,11 @@ namespace iShape.Triangulation.Shape {
 
                         j = 0;
 
-                        while(j < dSubs.Count) {
+                        while (j < dSubs.Count) {
 
                             var dSub = dSubs[j];
 
-                            if(dSub.next.next == node.self) {
+                            if (dSub.next.next == node.self) {
                                 var a = node.self;
                                 var b = dSub.middle;
                                 var bridge = links.Connect(a, b);
@@ -177,7 +178,7 @@ namespace iShape.Triangulation.Shape {
 
                                 var prevSub = new Sub(links[a], dSub.prev);
 
-                                if(!newNextSub.isEmpty) {
+                                if (!newNextSub.isEmpty) {
                                     dSubs[j] = new DualSub(newNextSub, prevSub);
                                     ++i;
                                     goto nextNode;
@@ -187,7 +188,7 @@ namespace iShape.Triangulation.Shape {
 
                                 newPrevSub = prevSub;
                                 continue;
-                            } else if(dSub.prev.prev == node.self) {
+                            } else if (dSub.prev.prev == node.self) {
 
                                 var a = dSub.middle;
                                 var b = node.self;
@@ -199,11 +200,12 @@ namespace iShape.Triangulation.Shape {
 
                                 var nextSub = new Sub(dSub.next, links[b]);
 
-                                if(!newPrevSub.isEmpty) {
+                                if (!newPrevSub.isEmpty) {
                                     dSubs[j] = new DualSub(nextSub, newPrevSub);
                                     ++i;
                                     goto nextNode;
                                 }
+
                                 dSubs.Exclude(j);
 
                                 newNextSub = nextSub;
@@ -212,19 +214,19 @@ namespace iShape.Triangulation.Shape {
 
                             ++j;
 
-                        }   //  while dSubs
+                        } //  while dSubs
 
                         j = 0;
 
-                        while(j < subs.Count) {
+                        while (j < subs.Count) {
                             var sub = subs[j];
 
-                            if(sub.next.next == node.self) {
+                            if (sub.next.next == node.self) {
                                 sub.next = node;
 
                                 subs.Exclude(j);
 
-                                if(!newNextSub.isEmpty) {
+                                if (!newNextSub.isEmpty) {
                                     dSubs.Add(new DualSub(newNextSub, sub));
                                     ++i;
                                     goto nextNode;
@@ -232,11 +234,11 @@ namespace iShape.Triangulation.Shape {
 
                                 newPrevSub = sub;
                                 continue;
-                            } else if(sub.prev.prev == node.self) {
+                            } else if (sub.prev.prev == node.self) {
                                 sub.prev = node;
                                 subs.Exclude(j);
 
-                                if(!newPrevSub.isEmpty) {
+                                if (!newPrevSub.isEmpty) {
                                     dSubs.Add(new DualSub(sub, newPrevSub));
                                     ++i;
                                     goto nextNode;
@@ -248,12 +250,13 @@ namespace iShape.Triangulation.Shape {
 
                             ++j;
                         }
+
                         break;
                     case LinkNature.split:
 
                         j = 0;
 
-                        while(j < subs.Count) {
+                        while (j < subs.Count) {
                             var sub = subs[j];
 
 
@@ -268,12 +271,12 @@ namespace iShape.Triangulation.Shape {
 
                             var p = node.vertex.point;
 
-                            if(IsTetragonContain(p, pA, pB, pC, pD)) {
+                            if (IsTetragonContain(p, pA, pB, pC, pD)) {
                                 var a0 = sub.next.self;
                                 var a1 = sub.prev.self;
                                 var b = node.self;
 
-                                if(pA.x > pD.x) {
+                                if (pA.x > pD.x) {
 
                                     var bridge = links.Connect(a0, b);
 
@@ -286,6 +289,7 @@ namespace iShape.Triangulation.Shape {
                                     subs.Add(new Sub(bridge.b, bridge.a));
                                     slices.Add(bridge.Slice);
                                 }
+
                                 subs[j] = new Sub(links[a0], links[b]);
                                 ++i;
                                 goto nextNode;
@@ -296,7 +300,7 @@ namespace iShape.Triangulation.Shape {
 
                         j = 0;
 
-                        while(j < dSubs.Count) {
+                        while (j < dSubs.Count) {
 
                             var dSub = dSubs[j];
 
@@ -307,7 +311,7 @@ namespace iShape.Triangulation.Shape {
                             var pD = dSub.prev.vertex.point;
                             var p = node.vertex.point;
 
-                            if(IsTetragonContain(p, pA, pB, pC, pD)) {
+                            if (IsTetragonContain(p, pA, pB, pC, pD)) {
                                 var a = dSub.middle;
 
                                 var b = node.self;
@@ -324,18 +328,18 @@ namespace iShape.Triangulation.Shape {
 
                             ++j;
 
-                        }   //  while dSubs
+                        } //  while dSubs
 
                         break;
                     case LinkNature.end:
 
                         j = 0;
 
-                        while(j < subs.Count) {
+                        while (j < subs.Count) {
                             var sub = subs[j];
 
                             // second condition is useless because it repeats the first
-                            if(sub.next.next == node.self) /* || sub.prev.prev.index == node.this */ {
+                            if (sub.next.next == node.self) /* || sub.prev.prev.index == node.this */ {
                                 indices.Add(links.FindStart(node.self));
 
                                 subs.Exclude(j);
@@ -349,12 +353,12 @@ namespace iShape.Triangulation.Shape {
 
                         j = 0;
 
-                        while(j < dSubs.Count) {
+                        while (j < dSubs.Count) {
 
                             var dSub = dSubs[j];
 
                             // second condition is useless because it repeats the first
-                            if(dSub.next.next == node.self) /*|| dSub.prevSub.prev.prev.index == node.this*/ {
+                            if (dSub.next.next == node.self) /*|| dSub.prevSub.prev.prev.index == node.this*/ {
                                 var a = dSub.middle;
                                 var b = node.self;
                                 var bridge = links.Connect(a, b);
@@ -372,24 +376,24 @@ namespace iShape.Triangulation.Shape {
 
                             ++j;
 
-                        }   //  while dSubs
+                        } //  while dSubs
 
                         break;
 
-                    case LinkNature.simple: 
+                    case LinkNature.simple:
 
                         j = 0;
 
-                        while(j < subs.Count) {
+                        while (j < subs.Count) {
                             var sub = subs[j];
 
-                            if(sub.next.next == node.self) {
+                            if (sub.next.next == node.self) {
                                 sub.next = node;
                                 subs[j] = sub;
 
                                 ++i;
                                 goto nextNode;
-                            } else if(sub.prev.prev == node.self) {
+                            } else if (sub.prev.prev == node.self) {
                                 sub.prev = node;
                                 subs[j] = sub;
                                 // goto next node
@@ -402,11 +406,11 @@ namespace iShape.Triangulation.Shape {
 
                         j = 0;
 
-                        while(j < dSubs.Count) {
+                        while (j < dSubs.Count) {
 
                             var dSub = dSubs[j];
 
-                            if(dSub.next.next == node.self) {
+                            if (dSub.next.next == node.self) {
 
                                 var a = dSub.middle;
                                 var b = node.self;
@@ -424,7 +428,7 @@ namespace iShape.Triangulation.Shape {
                                 // goto next node
                                 ++i;
                                 goto nextNode;
-                            } else if(dSub.prev.prev == node.self) {
+                            } else if (dSub.prev.prev == node.self) {
 
                                 var a = node.self;
                                 var b = dSub.middle;
@@ -446,9 +450,10 @@ namespace iShape.Triangulation.Shape {
 
                             ++j;
 
-                        }   //  while dSubs
+                        } //  while dSubs
+
                         break;
-                }   // switch
+                } // switch
             }
 
             subs.Dispose();
@@ -491,7 +496,7 @@ namespace iShape.Triangulation.Shape {
 
             return new Bridge(newLinkA, newLinkB);
         }
-        
+
         private static int ConnectExtraPrev(this ref DynamicArray<Link> links, int iHand, int iNode) {
             var handLink = links[iHand];
             var nodeLink = links[iNode];
@@ -516,7 +521,7 @@ namespace iShape.Triangulation.Shape {
 
             return iNewHand;
         }
-        
+
         private static int ConnectExtraNext(this ref DynamicArray<Link> links, int iHand, int iNode) {
             var handLink = links[iHand];
             var nodeLink = links[iNode];
@@ -526,7 +531,7 @@ namespace iShape.Triangulation.Shape {
             var count = links.Count;
 
             var iNewHand = count;
-        
+
             var newHandLink = new Link(iNode, iNewHand, handLink.next, handLink.vertex);
             links.Add(newHandLink);
 
@@ -541,34 +546,86 @@ namespace iShape.Triangulation.Shape {
 
             return iNewHand;
         }
-        
-        private static long Sign(IntVector a, IntVector b, IntVector c) {
-            return (a.x - c.x) * (b.y - c.y) - (b.x - c.x) * (a.y - c.y);
-        }
 
         private static bool IsTriangleContain(IntVector p, IntVector a, IntVector b, IntVector c) {
-            var d1 = Sign(p, a, b);
-            var d2 = Sign(p, b, c);
-            var d3 = Sign(p, c, a);
+            long q0 = (p - b).CrossProduct(a - b);
+            long q1 = (p - c).CrossProduct(b - c);
+            long q2 = (p - a).CrossProduct(c - a);
 
-            bool has_neg = d1 < 0 || d2 < 0 || d3 < 0;
-            bool has_pos = d1 > 0 || d2 > 0 || d3 > 0;
+            bool has_neg = q0 < 0 || q1 < 0 || q2 < 0;
+            bool has_pos = q0 > 0 || q1 > 0 || q2 > 0;
 
             return !(has_neg && has_pos);
         }
 
-        private static bool IsTetragonContain(IntVector p, IntVector a, IntVector b, IntVector c, IntVector d) {
-            return IsTriangleContain(p, a, b, c) || IsTriangleContain(p, a, c, d);
+        private static bool IsTriangleNotContain(IntVector p, IntVector a, IntVector b, IntVector c) {
+            long q0 = (p - b).CrossProduct(a - b);
+            long q1 = (p - c).CrossProduct(b - c);
+            long q2 = (p - a).CrossProduct(c - a);
+
+            bool has_neg = q0 <= 0 || q1 <= 0 || q2 <= 0;
+            bool has_pos = q0 >= 0 || q1 >= 0 || q2 >= 0;
+
+            return has_neg && has_pos;
         }
 
+        private static bool IsTetragonContain(IntVector p, IntVector a, IntVector b, IntVector c, IntVector d) {
+            var ab = a - b;
+            var bc = b - c;
+            var cd = c - d;
+            var da = d - a;
+
+            long da_ab = da.CrossProduct(ab);
+
+            // dab
+            if (da_ab > 0) {
+                var in_bcd = IsTriangleContain(p,b, c, d);
+                var not_dab = IsTriangleNotContain(p,d, a, b);
+                return in_bcd && not_dab;
+            }
+
+            var ab_bc = ab.CrossProduct(bc);
+
+            // abc
+            if (ab_bc > 0) {
+                var in_cda = IsTriangleContain(p, c, d, a);
+                var not_abc = IsTriangleNotContain(p, a, b, c);
+                return in_cda && not_abc;
+            }
+
+            var bc_cd = bc.CrossProduct(cd);
+
+            // bcd
+            if (bc_cd > 0) {
+                var in_dab = IsTriangleContain(p, d, a, b);
+                var not_bcd = IsTriangleNotContain(p, b, c, d);
+                return in_dab && not_bcd;
+            }
+
+            var cd_da = cd.CrossProduct(da);
+
+            // cda
+            if (cd_da > 0) {
+                var in_abc = IsTriangleContain(p, a, b, c);
+                var not_cda = IsTriangleNotContain(p, c, d, a);
+                return in_abc && not_cda;
+            }
+
+            // convex
+            var abc = IsTriangleContain(p, a, b, c);
+            var cda = IsTriangleContain(p, c, d, a);
+            
+            return abc || cda;
+        }
     }
 
     internal static class DynamicArrayExtension {
         internal static void Exclude<T>(this ref DynamicArray<T> array, int index) where T : struct {
             int lastIndex = array.Count - 1;
-            if(lastIndex != index) {
+            if (lastIndex != index) {
                 array[index] = array[lastIndex];
             }
+
             array.RemoveLast();
         }
 
@@ -581,20 +638,20 @@ namespace iShape.Triangulation.Shape {
             var aBit = next.vertex.point.BitPack;
             var bBit = prev.vertex.point.BitPack;
 
-            if(aBit < bit) {
+            if (aBit < bit) {
                 do {
                     next = array[next.next];
                     bit = aBit;
                     aBit = next.vertex.point.BitPack;
-                } while(aBit < bit);
+                } while (aBit < bit);
 
                 return next.prev;
-            } else if(bBit < bit) {
+            } else if (bBit < bit) {
                 do {
                     prev = array[prev.prev];
                     bit = bBit;
                     bBit = prev.vertex.point.BitPack;
-                } while(bBit < bit);
+                } while (bBit < bit);
 
                 return prev.next;
             } else {

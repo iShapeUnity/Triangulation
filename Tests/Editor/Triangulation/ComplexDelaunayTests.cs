@@ -656,6 +656,61 @@ namespace Tests.Triangulation {
 			triangles.Dispose();
 			origin.Dispose();
 		}
+		
+		[Test]
+		public void TestTriangulate_33()
+		{
+			var triangles = this.Triangulate(33);
+			var origin = new NativeArray<int>(new int[] {
+				2, 4, 6,
+				6, 4, 5,
+				2, 3, 4,
+				6, 0, 2,
+				2, 0, 1
+			}, Allocator.Temp);
 
+			bool isEqual = triangles.CompareTriangles(origin);
+			Assert.IsTrue(isEqual);
+			triangles.Dispose();
+			origin.Dispose();
+		}
+
+		[Test]
+		public void TestTriangulate_34()
+		{
+			var triangles = this.Triangulate(34);
+			var origin = new NativeArray<int>(new int[] {
+				16, 17, 15,
+				21, 22, 20,
+				20, 22, 19,
+				22, 23, 19,
+				23, 24, 19,
+				19, 24, 18,
+				17, 18, 25,
+				24, 25, 18,
+				17, 25, 15,
+				12, 13, 11,
+				6, 8, 10,
+				10, 8, 9,
+				6, 7, 8,
+				26, 0, 1,
+				1, 2, 3,
+				14, 15, 13,
+				10, 15, 25,
+				10, 13, 15,
+				13, 10, 11,
+				10, 25, 6,
+				25, 26, 6,
+				26, 1, 3,
+				26, 3, 6,
+				6, 3, 5,
+				3, 4, 5
+			}, Allocator.Temp);
+
+			bool isEqual = triangles.CompareTriangles(origin);
+			Assert.IsTrue(isEqual);
+			triangles.Dispose();
+			origin.Dispose();
+		}
 	}
 }
