@@ -1,6 +1,6 @@
 {
   "name": "com.ishape.triangulation",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "displayName": "iShape.Triangulation",
   "description": "Complex polygon triangulation. A fast O(n*log(n)) algorithm based on 'Triangulation of monotone polygons'. The result can be represented as a Delaunay triangulation.",
   "unity": "2022.2",

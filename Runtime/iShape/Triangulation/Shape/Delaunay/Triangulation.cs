@@ -84,6 +84,8 @@ namespace iShape.Triangulation.Shape.Delaunay {
                 delaunay = new Delaunay(points, triangles, allocator);
                 points.Dispose();
             }
+            
+            triangles.Dispose();
 
             layout.Dispose();
             
