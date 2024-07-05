@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.0.8] - 2024-07-05
+
+### Fixes
+
+- Test assembly
+
 ## [0.0.7] - 2024-03-07
 
 ### Fixes
